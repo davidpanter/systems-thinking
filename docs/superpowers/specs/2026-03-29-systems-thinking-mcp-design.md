@@ -22,7 +22,7 @@ Frames the problem and creates a session.
 **Output:**
 - `sessionId` — unique session identifier
 - `problem` — restated problem for confirmation
-- `suggestedLenses` — array of `{ modelId, name, reason }` matched by keyword/tag analysis against the problem description
+- `suggestedLenses` — array of `{ modelId, name, reason, guidingQuestions, requiredFields }` matched by case-insensitive word matching of problem + context text against model `tags` and `description` fields, ranked by match count, returning the top 5. Includes each model's guiding questions and required fields so Claude knows what to produce before calling `apply_lens`.
 
 ### `apply_lens`
 
@@ -43,7 +43,7 @@ Applies a named model to the problem. Called multiple times per session to build
 - `requiredFields` — the model's expected findings fields with descriptions and hints
 - `missingFields` — any required fields not provided (soft reminder, not rejection)
 - `crossReferences` — connections to prior lens findings (keyword-matched)
-- `suggestedNextLenses` — 1-3 suggestions from `related_models` + tag matching, excluding already-applied lenses
+- `suggestedNextLenses` — 1-3 suggestions from `related_models` + tag matching, excluding already-applied lenses. Each includes `guidingQuestions` and `requiredFields` for the suggested model.
 - `sessionSummary` — current session state (problem, lenses applied so far)
 
 ### `synthesize`
@@ -74,7 +74,7 @@ Each model is a YAML file. The category is determined by the directory it lives 
 ```yaml
 id: constraints                    # Unique identifier, used in apply_lens
 name: Constraint Analysis          # Human-readable name
-category: operations               # Set by directory, echoed here for portability
+category: operations               # Informational — directory name is authoritative. Loader ignores this field.
 tags: [bottleneck, throughput, capacity, troubleshooting, planning]
 description: >
   Identify the binding constraint that limits overall system throughput.
@@ -187,8 +187,14 @@ systems-thinking/
 │       ├── binary-search.yaml
 │       ├── parallelism.yaml
 │       └── caches.yaml
+├── tests/
+│   ├── loader.test.ts        # YAML parsing, directory scanning, overlay behavior
+│   ├── server.test.ts        # Session lifecycle, error cases, cross-references
+│   └── matching.test.ts      # Keyword matching for suggestions and cross-refs
 └── dist/
 ```
+
+**Package name:** `systems-thinking-mcp`
 
 ## Session State
 
@@ -220,13 +226,28 @@ The server performs lightweight keyword matching across accumulated findings:
 2. **Suggested next lenses** — combines the current model's `related_models` with tag-matching against the problem description. Filters out already-applied lenses. Returns 1-3 suggestions with reasons.
 3. **On `synthesize`** — returns the full session with a structured prompt nudging Claude to identify agreements, contradictions, and gaps across lenses.
 
-Cross-referencing is keyword-based and simple. False positives are cheap; missed connections are expensive.
+Cross-referencing uses case-insensitive word matching with no stemming. False positives are cheap; missed connections are expensive.
+
+## Error Handling
+
+The server is permissive — it guides rather than rejects:
+
+- **Invalid `sessionId`** on `apply_lens` or `synthesize` — return a clear error with available session IDs (if any).
+- **Unknown `modelId`** on `apply_lens` — return an error listing available model IDs.
+- **`synthesize` with zero lenses** — allowed with a warning ("No lenses applied yet — synthesis will be based on the problem statement alone").
+- **`apply_lens` after `synthesize`** — allowed. The session stays open; the synthesis can be revised.
+- **Missing required `findings` fields** — soft reminder in the response (`missingFields`), not a rejection.
+- **Duplicate `start_analysis`** — each call creates a new independent session.
+
+## Session Lifetime
+
+Sessions live in-memory for the server process lifetime. The server runs as a stdio child process of Claude Code and exits when the connection closes — no explicit cleanup needed. No maximum session count or TTL is enforced in v1.
 
 ## Extensibility
 
 - **Custom models directory** — `--models-dir /path/to/models` CLI flag. Custom models overlay built-ins; same `id` = custom wins.
 - **No code changes needed** — drop a YAML file following the format, restart the server.
-- **Category from directory** — the subdirectory name under `models/` is the category.
+- **Category from directory** — the subdirectory name under `models/` is the category. The `category` field in YAML is informational and ignored by the loader.
 
 ## Configuration
 
