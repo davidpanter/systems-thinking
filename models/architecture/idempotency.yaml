@@ -1,0 +1,39 @@
+id: idempotency
+name: Idempotency
+category: architecture
+tags: [reliability, retries, safety, design]
+description: >
+  An operation is idempotent if performing it multiple times produces the
+  same result as performing it once. In distributed systems, messages get
+  retried, requests get duplicated, and cron jobs overlap. If your
+  operations aren't idempotent, every retry is a potential corruption.
+
+guiding_questions:
+  - What happens if this operation runs twice with the same input?
+  - Which writes, side effects, or state changes are not idempotent?
+  - Are there natural idempotency keys (request IDs, transaction IDs)?
+  - What happens if a cron job overlaps with itself?
+  - Do our queues guarantee exactly-once or at-least-once delivery?
+  - Where are we relying on "it won't happen twice" instead of making it safe?
+
+required_fields:
+  idempotent_operations:
+    description: Operations that are safe to repeat
+    hint: "GET requests, upserts with unique keys, setting absolute values (SET x=5 vs INCREMENT x)"
+  non_idempotent_operations:
+    description: Operations that produce different results on repeat execution
+    hint: "Increment counters, append to lists, send emails, charge credit cards, create records without dedup"
+  retry_exposure:
+    description: Where retries, duplicates, or overlaps can trigger repeat execution
+    hint: "Queue redelivery, HTTP retries, cron overlap, user double-click, network timeout + retry"
+  idempotency_strategies:
+    description: How to make non-idempotent operations safe
+    hint: "Idempotency keys, upsert instead of insert, dedup tables, conditional writes, distributed locks"
+
+related_models:
+  - id: failure-modes
+    reason: "Non-idempotent retries are a common failure mode in distributed systems"
+  - id: parallelism
+    reason: "Concurrent execution multiplies idempotency risks"
+  - id: reversibility
+    reason: "Idempotent operations are inherently safer to retry and easier to reason about"

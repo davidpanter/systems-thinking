@@ -1,0 +1,39 @@
+id: blast-radius
+name: Blast Radius
+category: architecture
+tags: [failure, isolation, risk, containment]
+description: >
+  How much of the system is affected when something goes wrong? A small
+  blast radius means a failure takes out one component. A large blast
+  radius means it takes out everything. Design to minimize and contain
+  blast radius — assume failures will happen and limit their reach.
+
+guiding_questions:
+  - If this component fails, what else fails with it?
+  - If this deploy is bad, how many users are affected?
+  - Are failures isolated to a single tenant, service, or region?
+  - What is the worst-case blast radius of a bad configuration change?
+  - Can we deploy to 1% of traffic before going to 100%?
+  - Where does a single failure cascade into a system-wide outage?
+
+required_fields:
+  blast_radius_map:
+    description: For each component or change type, what's the blast radius
+    hint: "DB failure → everything down. Cache failure → degraded performance. Bad deploy → one service. Config change → all services."
+  containment_boundaries:
+    description: What boundaries currently limit blast radius
+    hint: "Service isolation, tenant sharding, regional deployments, feature flags, circuit breakers"
+  maximum_blast_scenarios:
+    description: Scenarios with the largest possible blast radius
+    hint: "Shared database corruption, DNS failure, auth service down, bad global config push"
+  radius_reduction:
+    description: How to shrink the blast radius of high-risk operations
+    hint: "Canary deploys, feature flags, tenant isolation, bulkheads, regional failover, progressive rollout"
+
+related_models:
+  - id: failure-modes
+    reason: "Blast radius analysis extends failure modes with scope and containment"
+  - id: modularity
+    reason: "Module boundaries are blast radius containment boundaries"
+  - id: defense-in-depth
+    reason: "Defense layers limit how far a failure propagates"
