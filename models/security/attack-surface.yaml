@@ -37,3 +37,7 @@ related_models:
     reason: "Reducing privilege reduces the value of each attack surface entry point"
   - id: trust-boundaries
     reason: "Attack surface lives at trust boundaries"
+
+counterbalances:
+  - id: kiss
+    tension: "Surface minimization taken too far reduces functionality — security must serve the product, not replace it"

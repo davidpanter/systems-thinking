@@ -38,3 +38,7 @@ related_models:
     reason: "Infrastructure failures are common failure modes"
   - id: caches
     reason: "Stale or exhausted caches are a common bottom-level issue"
+
+counterbalances:
+  - id: top-down
+    tension: "Bottom-up can get lost in infrastructure details when the problem is upstream"

@@ -36,3 +36,7 @@ related_models:
     reason: "Second-order effects often manifest as feedback loops"
   - id: inversion
     reason: "Invert second-order effects to find non-obvious failure paths"
+
+counterbalances:
+  - id: occams-razor
+    tension: "Chasing second-order effects can lead to analysis paralysis — sometimes the first-order explanation is sufficient"

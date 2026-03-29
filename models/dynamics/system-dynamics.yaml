@@ -36,3 +36,7 @@ related_models:
     reason: "Stock/flow models formalize dynamic behavior over time"
   - id: causal-loop-diagrams
     reason: "CLD maps the causal structure behind dynamic behavior"
+
+counterbalances:
+  - id: occams-razor
+    tension: "Dynamic modeling can over-complicate what might have a simple, static explanation"

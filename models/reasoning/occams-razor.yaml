@@ -37,3 +37,7 @@ related_models:
     reason: "Bottom-up starts with the simplest, most foundational checks"
   - id: map-vs-territory
     reason: "When the map is wrong, Occam's says the simplest map error is most likely"
+
+counterbalances:
+  - id: second-order-thinking
+    tension: "The simplest explanation may be wrong when second-order effects are at play"

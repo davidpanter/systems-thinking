@@ -37,3 +37,7 @@ related_models:
     reason: "Denormalized data is a form of cache with the same invalidation challenges"
   - id: constraints
     reason: "Denormalization decisions should focus on the read path bottleneck"
+
+counterbalances:
+  - id: normalization
+    tension: "Denormalization optimizes for reads but creates consistency risks and maintenance burden"

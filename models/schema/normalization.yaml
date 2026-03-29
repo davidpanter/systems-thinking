@@ -37,3 +37,7 @@ related_models:
     reason: "Schema redundancy is a form of data coupling between tables"
   - id: source-sink
     reason: "Understanding where data originates and terminates informs normalization choices"
+
+counterbalances:
+  - id: denormalization
+    tension: "Full normalization optimizes for write consistency but can cripple read performance"

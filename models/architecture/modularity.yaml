@@ -36,3 +36,7 @@ related_models:
     reason: "Module boundaries affect failure isolation"
   - id: conways-law
     reason: "Team structure often dictates module boundaries"
+
+counterbalances:
+  - id: kiss
+    tension: "Decomposition adds boundaries and interfaces — is the modularity earning its cost, or would a simpler monolith work?"

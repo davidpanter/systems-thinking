@@ -37,3 +37,7 @@ related_models:
     reason: "Each security control is a component that can fail"
   - id: cia-triad
     reason: "Layer depth should match the CIA priority of each asset"
+
+counterbalances:
+  - id: kiss
+    tension: "Each defense layer adds complexity and operational overhead — diminishing returns set in"

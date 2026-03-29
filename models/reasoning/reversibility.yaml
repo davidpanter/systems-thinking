@@ -37,3 +37,7 @@ related_models:
     reason: "Irreversible decisions need larger margins of safety"
   - id: second-order-thinking
     reason: "Second-order effects of irreversible decisions are the most dangerous"
+
+counterbalances:
+  - id: constraints
+    tension: "Making everything reversible has a cost — sometimes committing to an irreversible decision removes a constraint"

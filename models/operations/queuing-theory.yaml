@@ -36,3 +36,7 @@ related_models:
     reason: "The queue that grows fastest is likely at the constraint"
   - id: stock-and-flow
     reason: "Queues are stocks; arrival/service rates are flows"
+
+counterbalances:
+  - id: kiss
+    tension: "Queuing math can over-engineer what might just need a bigger box or fewer features"

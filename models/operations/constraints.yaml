@@ -38,3 +38,9 @@ related_models:
     reason: "Buffer sizing protects the constraint from starvation"
   - id: leverage-points
     reason: "The binding constraint is often a high-leverage intervention point"
+
+counterbalances:
+  - id: kiss
+    tension: "Constraint optimization can add complexity — is the simplest solution good enough?"
+  - id: inversion
+    tension: "Instead of optimizing the constraint, ask: what if the constraint is the wrong thing to focus on entirely?"

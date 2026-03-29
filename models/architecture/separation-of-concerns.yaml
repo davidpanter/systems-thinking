@@ -38,3 +38,7 @@ related_models:
     reason: "Mixed concerns produce low cohesion and high coupling"
   - id: kiss
     reason: "Well-separated concerns are simpler to understand individually"
+
+counterbalances:
+  - id: kiss
+    tension: "Clean separation can mean more files, more indirection, more abstraction — is it worth the cost?"

@@ -36,3 +36,7 @@ related_models:
     reason: "Feedback loops drive the dynamic behavior of systems"
   - id: causal-loop-diagrams
     reason: "CLD is the standard notation for mapping feedback loops"
+
+counterbalances:
+  - id: kiss
+    tension: "Adding feedback controls adds complexity — is the system actually oscillating, or are we over-controlling?"

@@ -37,3 +37,7 @@ related_models:
     reason: "Inversion identifies what to build margins against"
   - id: second-order-thinking
     reason: "Inversion of second-order effects reveals non-obvious failure paths"
+
+counterbalances:
+  - id: second-order-thinking
+    tension: "Inversion focuses on preventing failure — but preventing all failure can prevent all progress too"

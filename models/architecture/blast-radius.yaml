@@ -37,3 +37,7 @@ related_models:
     reason: "Module boundaries are blast radius containment boundaries"
   - id: defense-in-depth
     reason: "Defense layers limit how far a failure propagates"
+
+counterbalances:
+  - id: kiss
+    tension: "Isolation boundaries add complexity — is the containment worth the overhead?"

@@ -36,3 +36,9 @@ related_models:
     reason: "Changing feedback loop structure is high-leverage"
   - id: causal-loop-diagrams
     reason: "The causal map reveals where leverage points exist"
+
+counterbalances:
+  - id: kiss
+    tension: "High-leverage interventions can be high-complexity — a low-leverage simple fix might be more reliable"
+  - id: margin-of-safety
+    tension: "High-leverage points are powerful but risky — do we have margin for when the intervention backfires?"

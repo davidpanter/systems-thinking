@@ -37,3 +37,7 @@ related_models:
     reason: "Inversion reveals what the margin needs to protect against"
   - id: circle-of-competence
     reason: "Build larger margins in areas outside your circle of competence"
+
+counterbalances:
+  - id: constraints
+    tension: "Large margins mean unused capacity — are we over-provisioning at the expense of efficiency?"

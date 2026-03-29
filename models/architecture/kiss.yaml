@@ -37,3 +37,9 @@ related_models:
     reason: "Unnecessary coupling is a common source of accidental complexity"
   - id: leverage-points
     reason: "Simplification is often a high-leverage intervention"
+
+counterbalances:
+  - id: modularity
+    tension: "Simplicity can mean a monolith — but a monolith may hide complexity rather than eliminate it"
+  - id: leverage-points
+    tension: "The simplest solution may miss high-leverage structural changes that pay off long-term"

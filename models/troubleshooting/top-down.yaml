@@ -36,3 +36,7 @@ related_models:
     reason: "Source/sink analysis formalizes the input/output tracing"
   - id: binary-search
     reason: "If top-down finds the problem is somewhere in the middle, bisect"
+
+counterbalances:
+  - id: bottom-up
+    tension: "Top-down can miss foundational issues by assuming infrastructure is healthy"
