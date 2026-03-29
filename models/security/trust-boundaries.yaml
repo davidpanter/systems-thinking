@@ -1,0 +1,39 @@
+id: trust-boundaries
+name: Trust Boundaries
+category: security
+tags: [validation, boundaries, input, untrusted]
+description: >
+  Identify where trusted meets untrusted in the system. Every trust
+  boundary crossing requires validation — data entering from an
+  untrusted zone must be treated as hostile until proven safe.
+  Trust should be explicit, never inherited by proximity.
+
+guiding_questions:
+  - Where does data cross from untrusted to trusted contexts?
+  - What validation happens at each boundary crossing?
+  - Are there internal boundaries between services with different trust levels?
+  - Do we trust data from our own database? Our own cache? Should we?
+  - Where do we assume data is clean because "it already passed validation upstream"?
+  - Are third-party integrations treated as untrusted?
+
+required_fields:
+  boundary_map:
+    description: All trust boundaries in the system with their trust levels
+    hint: "Internet → DMZ → app tier → data tier. Third-party API → our service. User input → backend."
+  validation_at_boundaries:
+    description: What validation occurs at each boundary crossing
+    hint: "Input sanitization, schema validation, auth checks, rate limiting, encoding"
+  implicit_trust:
+    description: Places where trust is assumed without verification
+    hint: "Internal services calling each other without auth, cached data assumed valid, upstream output trusted"
+  boundary_hardening:
+    description: How to strengthen validation at the most critical boundaries
+    hint: "Add schema validation, enforce auth between internal services, sanitize at every entry point"
+
+related_models:
+  - id: attack-surface
+    reason: "Trust boundaries define where the attack surface exists"
+  - id: least-privilege
+    reason: "Privilege should change at trust boundary transitions"
+  - id: modularity
+    reason: "Module boundaries should align with trust boundaries where security matters"

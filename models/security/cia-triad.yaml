@@ -1,0 +1,39 @@
+id: cia-triad
+name: CIA Triad
+category: security
+tags: [confidentiality, integrity, availability, risk, planning]
+description: >
+  Evaluate a system through the three pillars of information security:
+  Confidentiality (who can see it), Integrity (who can change it),
+  and Availability (can authorized users access it when needed).
+  Every security decision is a tradeoff among these three.
+
+guiding_questions:
+  - What data or operations require confidentiality? Who should NOT see them?
+  - Where could data integrity be violated? Unauthorized modification, corruption, replay?
+  - What are the availability requirements? What happens when the system is down?
+  - Where are we over-investing in one pillar at the expense of another?
+  - Which assets are most sensitive? What's the impact of a breach for each pillar?
+  - Are there regulatory or compliance requirements driving specific pillar priorities?
+
+required_fields:
+  confidentiality_assessment:
+    description: What needs to stay secret and how well protected is it?
+    hint: "PII, credentials, business logic, API keys — who has access vs. who should?"
+  integrity_assessment:
+    description: What needs to remain trustworthy and unaltered?
+    hint: "Financial records, audit logs, configuration, user permissions — can they be tampered with?"
+  availability_assessment:
+    description: What needs to remain accessible and how resilient is it?
+    hint: "SLAs, single points of failure, DDoS exposure, recovery time objectives"
+  tradeoff_analysis:
+    description: Where are the tensions between pillars and how are they balanced?
+    hint: "Encryption adds latency (C vs A), strict validation rejects edge cases (I vs A)"
+
+related_models:
+  - id: attack-surface
+    reason: "CIA priorities determine which parts of the attack surface matter most"
+  - id: least-privilege
+    reason: "Least privilege directly supports confidentiality and integrity"
+  - id: failure-modes
+    reason: "Availability failures are a subset of failure mode analysis"

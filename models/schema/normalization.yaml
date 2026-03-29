@@ -1,0 +1,39 @@
+id: normalization
+name: Normalization
+category: schema
+tags: [database, data-integrity, redundancy, design]
+description: >
+  Evaluate data structures for redundancy, update anomalies, and
+  normalization level. Normalization eliminates duplicate data and
+  ensures each fact is stored once. Violations lead to inconsistency,
+  wasted storage, and error-prone updates.
+
+guiding_questions:
+  - Are there fields that store the same fact in multiple places?
+  - Can an update to one row make the data inconsistent with another?
+  - What normal form does each table satisfy? Where does it fall short?
+  - Are there insertion, update, or deletion anomalies?
+  - Is data being duplicated for convenience that could be joined instead?
+  - Where is denormalization intentional and documented vs. accidental?
+
+required_fields:
+  normalization_assessment:
+    description: Current normalization level of key tables/structures
+    hint: "1NF, 2NF, 3NF, BCNF — where does each table stand and where does it violate?"
+  redundancy_identified:
+    description: Data stored in multiple places that could become inconsistent
+    hint: "Customer name in both orders and customers table, computed totals stored alongside line items"
+  anomalies:
+    description: Insert, update, or delete anomalies present in the schema
+    hint: "Can't add a product without an order? Updating a name requires changing 50 rows?"
+  normalization_plan:
+    description: How to improve normalization where it matters
+    hint: "Extract to separate table, add foreign key, remove computed columns, add constraints"
+
+related_models:
+  - id: denormalization
+    reason: "The deliberate counterpart — when to break normal forms for performance"
+  - id: coupling-cohesion
+    reason: "Schema redundancy is a form of data coupling between tables"
+  - id: source-sink
+    reason: "Understanding where data originates and terminates informs normalization choices"

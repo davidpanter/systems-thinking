@@ -1,0 +1,39 @@
+id: denormalization
+name: Denormalization
+category: schema
+tags: [performance, read-optimization, tradeoffs, design]
+description: >
+  The deliberate violation of normal forms to optimize read performance,
+  simplify queries, or support specific access patterns. Denormalization
+  trades write complexity and consistency risk for read speed. Every
+  denormalization should be a conscious, documented decision.
+
+guiding_questions:
+  - Which queries are too slow or too complex due to joins?
+  - What access patterns dominate — reads or writes?
+  - Where would duplicating data significantly improve read performance?
+  - How will denormalized copies stay in sync with the source of truth?
+  - Is the denormalization a cache (search index, materialized view) or baked into the schema?
+  - What happens when the denormalized copy becomes stale?
+
+required_fields:
+  denormalization_inventory:
+    description: Current denormalizations — intentional and accidental
+    hint: "Duplicate columns, summary tables, materialized views, search indexes, cached aggregations"
+  access_pattern_justification:
+    description: Which access patterns justify each denormalization
+    hint: "Dashboard needs sub-second response, report joins 8 tables, search requires full-text index"
+  consistency_mechanisms:
+    description: How denormalized data stays in sync with the source of truth
+    hint: "Triggers, application-level sync, event-driven reindexing, cron jobs — and their failure modes"
+  staleness_tolerance:
+    description: How much staleness is acceptable for each denormalized copy
+    hint: "Real-time for account balance, minutes for search index, hours for analytics rollup"
+
+related_models:
+  - id: normalization
+    reason: "Normalization is the baseline — denormalization is the deliberate exception"
+  - id: caches
+    reason: "Denormalized data is a form of cache with the same invalidation challenges"
+  - id: constraints
+    reason: "Denormalization decisions should focus on the read path bottleneck"

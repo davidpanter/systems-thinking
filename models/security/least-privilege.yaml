@@ -1,0 +1,39 @@
+id: least-privilege
+name: Principle of Least Privilege
+category: security
+tags: [authorization, access-control, permissions, planning]
+description: >
+  Every actor (user, service, process) should have only the minimum
+  permissions necessary to perform its function, and only for the
+  duration needed. Over-permissioning is the root cause of most
+  privilege escalation and lateral movement attacks.
+
+guiding_questions:
+  - What permissions does each actor actually need vs. what they currently have?
+  - Are there service accounts with admin/root access that don't need it?
+  - Do permissions expire or get reviewed? Or do they accumulate forever?
+  - Can a compromised component access resources beyond its responsibility?
+  - Are database credentials shared across services that need different access levels?
+  - Is there separation between read and write access where it matters?
+
+required_fields:
+  actor_permissions_audit:
+    description: Map of actors to their current permissions vs. what they need
+    hint: "Users, service accounts, API keys, IAM roles — who has what, and is it justified?"
+  over_privileged_actors:
+    description: Actors with more access than their function requires
+    hint: "The service that only reads from the DB but has write access. The deploy key with admin scope."
+  permission_lifecycle:
+    description: How permissions are granted, reviewed, and revoked
+    hint: "Is there a review process? Do temporary permissions actually expire?"
+  blast_radius_reduction:
+    description: How to limit damage if any single actor is compromised
+    hint: "Segmentation, scoped credentials, time-limited tokens, role separation"
+
+related_models:
+  - id: cia-triad
+    reason: "Least privilege directly supports confidentiality and integrity goals"
+  - id: attack-surface
+    reason: "Over-privileged actors expand the effective attack surface"
+  - id: trust-boundaries
+    reason: "Privilege decisions should align with trust boundary transitions"

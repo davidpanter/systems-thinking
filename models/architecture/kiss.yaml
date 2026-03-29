@@ -1,0 +1,39 @@
+id: kiss
+name: KISS
+category: architecture
+tags: [simplicity, complexity, readability, planning]
+description: >
+  Keep It Stupid Simple. Complexity is the enemy of reliability,
+  maintainability, and understanding. Every abstraction, indirection,
+  and configuration option is a cost. The simplest solution that works
+  is usually the best one.
+
+guiding_questions:
+  - Can you explain this design to someone in 60 seconds?
+  - What would the simplest possible version of this look like?
+  - Which abstractions are earning their keep vs. adding complexity for no benefit?
+  - Are there features or configurability that nobody has asked for?
+  - Would a new team member understand this in their first week?
+  - What would you remove if you had to cut the design in half?
+
+required_fields:
+  complexity_inventory:
+    description: Sources of complexity in the current design
+    hint: "Abstractions, indirection layers, configuration options, framework magic, implicit behavior"
+  justified_complexity:
+    description: Which complexity is necessary and earns its cost?
+    hint: "Complexity that prevents real bugs, handles real requirements, or simplifies something else"
+  unjustified_complexity:
+    description: Which complexity could be removed without losing real value?
+    hint: "Premature abstractions, YAGNI features, over-engineering, speculative generality"
+  simplification_plan:
+    description: How to reduce complexity while preserving essential functionality
+    hint: "Inline the abstraction, hardcode the config, remove the feature, use a simpler tool"
+
+related_models:
+  - id: modularity
+    reason: "Good modularity reduces perceived complexity by creating understandable units"
+  - id: coupling-cohesion
+    reason: "Unnecessary coupling is a common source of accidental complexity"
+  - id: leverage-points
+    reason: "Simplification is often a high-leverage intervention"

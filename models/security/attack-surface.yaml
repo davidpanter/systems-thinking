@@ -1,0 +1,39 @@
+id: attack-surface
+name: Attack Surface
+category: security
+tags: [exposure, endpoints, minimization, risk]
+description: >
+  Reason about a system from the perspective of its attack surface —
+  every point where an untrusted actor can interact with the system.
+  Balance surface minimization against required functionality.
+  Smaller surface = fewer opportunities for exploitation.
+
+guiding_questions:
+  - What endpoints, ports, and protocols are exposed to untrusted networks?
+  - Which of those are actually necessary for the system's function?
+  - What input channels accept data from untrusted sources?
+  - Are there debug endpoints, admin panels, or legacy APIs still exposed?
+  - What is the attack surface of our dependencies? (supply chain)
+  - If we could only expose 3 things, which would they be?
+
+required_fields:
+  surface_inventory:
+    description: All points where untrusted actors can interact with the system
+    hint: "Network endpoints, APIs, file uploads, email handlers, webhooks, CLI inputs, dependency interfaces"
+  unnecessary_exposure:
+    description: Surface area that could be removed without losing required functionality
+    hint: "Unused endpoints, overly broad CORS, debug routes in production, open ports"
+  high_risk_surfaces:
+    description: Entry points that handle sensitive operations or complex parsing
+    hint: "Auth endpoints, file parsers, deserialization, SQL-adjacent inputs, admin interfaces"
+  minimization_plan:
+    description: How to reduce the attack surface while preserving functionality
+    hint: "Remove unused endpoints, restrict network exposure, simplify input handling, WAF rules"
+
+related_models:
+  - id: cia-triad
+    reason: "CIA priorities determine which surfaces pose the highest risk"
+  - id: least-privilege
+    reason: "Reducing privilege reduces the value of each attack surface entry point"
+  - id: trust-boundaries
+    reason: "Attack surface lives at trust boundaries"

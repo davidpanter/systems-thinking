@@ -1,0 +1,39 @@
+id: defense-in-depth
+name: Defense in Depth
+category: security
+tags: [layers, redundancy, controls, resilience]
+description: >
+  Layer multiple independent security controls so that no single
+  failure compromises the system. If the firewall fails, the app
+  still validates input. If input validation fails, the database
+  still enforces constraints. Each layer assumes the others have failed.
+
+guiding_questions:
+  - How many independent controls protect each critical asset?
+  - If layer N fails, what stops an attacker at layer N+1?
+  - Are the layers truly independent, or do they share failure modes?
+  - Where are we relying on a single control with no backup?
+  - Are controls at different levels — network, application, data, human?
+  - Which controls are preventive vs. detective vs. corrective?
+
+required_fields:
+  defense_layers:
+    description: Security controls at each layer protecting critical assets
+    hint: "Network (firewall, WAF), transport (TLS), application (auth, validation), data (encryption, constraints), monitoring (audit, alerting)"
+  single_layer_dependencies:
+    description: Critical assets protected by only one control
+    hint: "If that one control fails, the asset is exposed — these need additional layers"
+  layer_independence:
+    description: Whether layers share failure modes or dependencies
+    hint: "Two controls that both depend on the same auth service aren't truly independent"
+  gaps_and_recommendations:
+    description: Where to add layers or strengthen existing ones
+    hint: "Prioritize assets with single-layer protection and high impact"
+
+related_models:
+  - id: attack-surface
+    reason: "Defense in depth protects the attack surface at multiple levels"
+  - id: failure-modes
+    reason: "Each security control is a component that can fail"
+  - id: cia-triad
+    reason: "Layer depth should match the CIA priority of each asset"

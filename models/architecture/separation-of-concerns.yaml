@@ -1,0 +1,40 @@
+id: separation-of-concerns
+name: Separation of Concerns
+category: architecture
+tags: [responsibility, isolation, clarity, planning]
+description: >
+  Each component should address one concern and address it completely.
+  Mixing concerns (e.g., business logic with persistence, presentation
+  with validation) creates code that is hard to understand, test, and
+  change. When concerns are separated, changes to one don't ripple
+  through unrelated areas.
+
+guiding_questions:
+  - What distinct concerns does this system handle?
+  - Are any components mixing multiple concerns?
+  - If you needed to swap the database, how many files would change?
+  - Is business logic tangled with infrastructure, I/O, or presentation?
+  - Can you test the core logic without setting up external dependencies?
+  - Where does one concern bleed into another's territory?
+
+required_fields:
+  concerns_identified:
+    description: The distinct concerns this system manages
+    hint: "Business rules, data access, presentation, authentication, logging, error handling, configuration"
+  well_separated:
+    description: Concerns that are cleanly isolated from each other
+    hint: "Where you can change one without touching the other"
+  tangled_concerns:
+    description: Concerns that are mixed together and cause problems
+    hint: "SQL in controllers, validation in templates, auth checks scattered everywhere"
+  separation_strategies:
+    description: How to disentangle mixed concerns
+    hint: "Extract layer/module, introduce interface, move logic to where it belongs"
+
+related_models:
+  - id: modularity
+    reason: "Modules are the structural mechanism for separating concerns"
+  - id: coupling-cohesion
+    reason: "Mixed concerns produce low cohesion and high coupling"
+  - id: kiss
+    reason: "Well-separated concerns are simpler to understand individually"
