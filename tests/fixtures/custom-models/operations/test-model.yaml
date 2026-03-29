@@ -1,0 +1,14 @@
+id: test-model
+name: Custom Test Model
+tags: [custom, override]
+description: A custom override of the test model.
+
+guiding_questions:
+  - Is this the custom version?
+
+required_fields:
+  custom_field:
+    description: A custom field
+    hint: "Custom hint"
+
+related_models: []
