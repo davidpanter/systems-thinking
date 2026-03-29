@@ -49,7 +49,7 @@ mcpServer.registerTool("start_analysis", {
 
 Call this first to establish the problem context. Returns a sessionId and suggested lenses (with their guiding questions and required fields) based on keyword matching against your problem description.
 
-After starting, use apply_lens to examine the problem through specific models, then synthesize to integrate findings.`,
+THE EXPECTED WORKFLOW IS: start_analysis → apply_lens (2-4 times with different models) → synthesize. A single lens gives you one perspective. The value of this tool is in COMPOSING multiple perspectives — each lens reveals things the others miss, and the cross-references between them surface non-obvious connections. Apply at least 2-3 lenses before synthesizing. The suggestedNextLenses in each apply_lens response will guide you to complementary perspectives.`,
   inputSchema: StartAnalysisInput,
 }, async (args) => {
   const result = thinkingServer.startAnalysis(args);
@@ -92,6 +92,8 @@ Example call structure:
 
 Available models: ${models.map((m) => `${m.id} (${m.name})`).join(", ")}
 
+IMPORTANT: Do NOT stop after one lens. Apply 2-4 lenses per session to get genuine multi-perspective insight. After each application, review the suggestedNextLenses and crossReferences in the response — they point to complementary perspectives and connections to prior findings. When you've built enough perspective, call synthesize to integrate across lenses.
+
 Can be called multiple times per session. Allowed after synthesize.`,
   inputSchema: ApplyLensInput,
 }, async (args) => {
@@ -126,13 +128,13 @@ Can be called multiple times per session. Allowed after synthesize.`,
 
 mcpServer.registerTool("synthesize", {
   title: "Synthesize",
-  description: `Synthesize findings across all applied lenses into a unified view.
+  description: `Synthesize findings across all applied lenses into a unified view. This is the payoff — where cross-lens connections become actionable insight.
 
-Call after applying one or more lenses. Provide your cross-lens integration, recommendations, and note any contradictions or gaps between lenses.
+Call after applying 2+ lenses. Your synthesis should integrate findings across lenses: where did different perspectives agree (reinforcing confidence), where did they contradict (revealing tension), and what gaps remain? The best syntheses surface connections that no single lens would have found.
 
-Returns the full session (all lenses and findings) plus suggestions for additional lenses that might address identified gaps.
+Provide concrete, actionable recommendations grounded in the multi-lens evidence. Note contradictions explicitly — they often point to the most important design tensions. Note gaps — they suggest which lenses to apply next if deeper analysis is needed.
 
-Allowed with zero lenses (returns a warning). The session stays open after synthesis — you can apply more lenses and synthesize again.`,
+The session stays open after synthesis. If the synthesis reveals gaps, apply more lenses and synthesize again.`,
   inputSchema: SynthesizeInput,
 }, async (args) => {
   const result = thinkingServer.synthesize(args);
