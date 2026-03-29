@@ -1,0 +1,40 @@
+id: bottom-up
+name: Bottom-Up
+category: troubleshooting
+tags: [infrastructure, dependencies, assumptions, diagnostic]
+description: >
+  Start from the foundations and work up. Challenge assumptions about the
+  health of infrastructure, dependencies, and underlying resources. The
+  problem may not be where you think it is — verify from the bottom.
+
+guiding_questions:
+  - Are the basics healthy? CPU, memory, disk, network?
+  - Is the system swapping, OOM-killing, or running out of file descriptors?
+  - Are the volumes/disks okay? Is I/O saturated?
+  - Is the network healthy? Packet loss, DNS resolution, MTU issues?
+  - What supports the component under investigation? Are those dependencies actually working?
+  - Did something change in the database? Schema, data volume, indexes?
+  - Are our code/library dependencies sane? Have they changed recently?
+  - What assumptions are we making about the environment that we have not verified?
+
+required_fields:
+  assumptions_challenged:
+    description: Assumptions about infrastructure or dependencies that were tested
+    hint: "I assumed the DB was fine — actually it was swapping. I assumed DNS was resolving — it was cached stale."
+  infrastructure_checks:
+    description: Infrastructure health verification results
+    hint: "Memory, CPU, disk, network, OS limits — what did you actually check?"
+  dependency_status:
+    description: Status of upstream and underlying dependencies
+    hint: "Database, caches, message queues, external APIs, shared services — verified healthy or not?"
+  root_cause_candidates:
+    description: Potential root causes identified from the bottom up
+    hint: "Which foundational issues could explain the symptoms?"
+
+related_models:
+  - id: top-down
+    reason: "Combine with top-down for a pincer approach — verify both ends"
+  - id: failure-modes
+    reason: "Infrastructure failures are common failure modes"
+  - id: caches
+    reason: "Stale or exhausted caches are a common bottom-level issue"

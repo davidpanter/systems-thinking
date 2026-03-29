@@ -1,0 +1,38 @@
+id: top-down
+name: Top-Down
+category: troubleshooting
+tags: [pipeline, upstream, inputs, diagnostic]
+description: >
+  Trace from upstream down. Before blaming the component showing symptoms,
+  verify that its inputs, pipelines, and preconditions are healthy. The
+  problem may be upstream of where the symptoms appear.
+
+guiding_questions:
+  - Does the upstream system function as it should?
+  - Is DNS correct? Is data actually reaching our component?
+  - What pipeline feeds into this component? Is it behaving correctly?
+  - Are we assuming the pipeline ahead of this is healthy? Have we verified?
+  - Is the data arriving in the expected format, volume, and frequency?
+  - Could an upstream change (deploy, config, data shift) explain this?
+
+required_fields:
+  upstream_verification:
+    description: Verification that upstream systems are functioning correctly
+    hint: "Check each hop: DNS → load balancer → reverse proxy → app → dependencies"
+  input_validation:
+    description: Are inputs arriving in expected format, volume, and frequency?
+    hint: "Garbage in, garbage out — is the input actually clean?"
+  pipeline_health:
+    description: Health of each stage in the pipeline feeding this component
+    hint: "Which stages have you verified? Which are you assuming?"
+  upstream_changes:
+    description: Recent changes in upstream systems that could explain symptoms
+    hint: "Deploys, config changes, data migrations, traffic pattern shifts"
+
+related_models:
+  - id: bottom-up
+    reason: "Combine with bottom-up for a pincer approach"
+  - id: source-sink
+    reason: "Source/sink analysis formalizes the input/output tracing"
+  - id: binary-search
+    reason: "If top-down finds the problem is somewhere in the middle, bisect"

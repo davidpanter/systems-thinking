@@ -1,0 +1,36 @@
+id: binary-search
+name: Binary Search
+category: troubleshooting
+tags: [isolation, elimination, efficiency, diagnostic]
+description: >
+  Bisect the pipeline or call chain with yes/no tests to narrow the fault
+  location logarithmically. Instead of checking every component, pick the
+  midpoint, test, and eliminate half the search space each time.
+
+guiding_questions:
+  - Can you map the full pipeline from input to output?
+  - Where is the midpoint of the pipeline?
+  - What yes/no test can determine if the problem is before or after the midpoint?
+  - Can you inject test data at the midpoint to isolate direction?
+  - Are there natural checkpoints where you can observe state?
+  - How many bisection steps would isolate the fault?
+
+required_fields:
+  pipeline_map:
+    description: The full pipeline or call chain being investigated
+    hint: "List each stage from input to output"
+  test_points:
+    description: Points where you can observe state or inject tests
+    hint: "Logs, metrics, debug endpoints, database queries, tcpdump"
+  bisection_log:
+    description: Record of each bisection step and its result
+    hint: "Test at midpoint → problem is after → test at 3/4 → problem is before → narrowed to stage 5-6"
+  fault_location:
+    description: The narrowed-down location of the fault
+    hint: "After N bisection steps, the problem is in this specific component/stage"
+
+related_models:
+  - id: top-down
+    reason: "Top-down establishes the pipeline; binary search bisects it"
+  - id: bottom-up
+    reason: "Once fault is located, bottom-up verifies the root cause"

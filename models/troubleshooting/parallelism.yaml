@@ -1,0 +1,36 @@
+id: parallelism
+name: Parallelism
+category: troubleshooting
+tags: [concurrency, deadlock, race-condition, diagnostic]
+description: >
+  Examine the system through the lens of parallel and concurrent execution.
+  Look for deadlocks, race conditions, ordering assumptions, and resource
+  contention that only manifest under concurrent load.
+
+guiding_questions:
+  - What executes concurrently in this system? Threads, processes, async tasks?
+  - Are there shared resources accessed by multiple concurrent actors?
+  - What locking or synchronization mechanisms are in place?
+  - Can operations execute in a different order than expected?
+  - Does the bug only reproduce under load or specific timing?
+  - Are there assumptions about execution order that are not enforced?
+
+required_fields:
+  concurrent_actors:
+    description: What executes concurrently and how
+    hint: "Threads, processes, workers, async handlers, cron jobs, user requests"
+  shared_resources:
+    description: Resources accessed by multiple concurrent actors
+    hint: "Database rows, files, cache keys, in-memory state, connection pools"
+  synchronization_mechanisms:
+    description: How concurrent access is controlled
+    hint: "Locks, mutexes, transactions, queues, optimistic concurrency, CAS"
+  race_conditions:
+    description: Potential or confirmed race conditions
+    hint: "Read-modify-write without locking, check-then-act gaps, double-processing"
+
+related_models:
+  - id: queuing-theory
+    reason: "Contention creates queuing effects"
+  - id: failure-modes
+    reason: "Deadlocks and races are failure modes specific to concurrent systems"

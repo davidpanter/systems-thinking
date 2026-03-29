@@ -1,0 +1,38 @@
+id: caches
+name: Caches
+category: troubleshooting
+tags: [staleness, invalidation, ttl, layers, diagnostic]
+description: >
+  Audit all caching layers for invalidation issues and staleness.
+  Take a broad view — caches exist at every level from CPU to CDN.
+  Cache invalidation is one of the two hard problems for a reason.
+
+guiding_questions:
+  - What caches are in play? List every layer from app to network edge.
+  - How does each cache update? TTL, event-driven, manual purge?
+  - How does each cache invalidate? Is invalidation reliable?
+  - Could something be stale? What would stale data look like?
+  - Are there caches you might not think of? (DNS, OS page cache, ORM query cache, CDN, search index replication)
+  - Is a thundering herd or cache stampede possible?
+
+required_fields:
+  cache_layers:
+    description: All caching layers identified in the system
+    hint: "Application cache, Redis/Memcached, database query cache, ORM cache, HTTP cache, CDN, DNS cache, OS page cache, /dev/shm, search index (OpenSearch reindexing is a cache)"
+  invalidation_mechanisms:
+    description: How each cache invalidates and whether it is reliable
+    hint: "TTL, pub/sub, manual purge, write-through, write-behind — which ones have gaps?"
+  staleness_assessment:
+    description: Could stale data explain the symptoms?
+    hint: "Check each layer — is the data current? When was it last refreshed?"
+  stampede_risk:
+    description: Risk of cache stampede or thundering herd
+    hint: "What happens when a popular cache entry expires and 1000 requests hit the origin simultaneously?"
+
+related_models:
+  - id: bottom-up
+    reason: "Stale caches are a common foundational issue"
+  - id: buffers
+    reason: "Caches are a form of buffer — sizing and overflow rules apply"
+  - id: feedback-loops
+    reason: "Cache invalidation failures can create reinforcing failure loops"
