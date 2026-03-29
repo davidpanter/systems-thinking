@@ -1,0 +1,17 @@
+id: test-model
+name: Test Model
+tags: [testing, fixture]
+description: A test model for unit tests.
+
+guiding_questions:
+  - Is this a test?
+  - Does it work?
+
+required_fields:
+  test_field:
+    description: A test field
+    hint: "Put test data here"
+
+related_models:
+  - id: other-model
+    reason: "For testing relationships"
