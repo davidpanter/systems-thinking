@@ -1,0 +1,38 @@
+id: second-order-thinking
+name: Second-Order Thinking
+category: reasoning
+tags: [consequences, cascading, planning, prediction]
+description: >
+  Consider the consequences of the consequences. First-order effects
+  are obvious; second and third-order effects are where surprises live.
+  Most bad decisions look good at first order and terrible at second.
+
+guiding_questions:
+  - What is the immediate effect of this change? (First order)
+  - And then what happens? (Second order)
+  - And then what? (Third order)
+  - Who else is affected beyond the direct target?
+  - What incentives does this create? Will people behave differently?
+  - What worked last time we did something similar? What surprised us?
+
+required_fields:
+  first_order_effects:
+    description: The immediate, obvious consequences
+    hint: "The thing we're trying to achieve — this is usually clear"
+  second_order_effects:
+    description: What happens as a result of the first-order effects
+    hint: "Caching speeds up reads (1st) → stale data causes bugs (2nd) → users lose trust (3rd)"
+  incentive_shifts:
+    description: How does this change what people or systems are incentivized to do?
+    hint: "Adding a metric changes what people optimize for. Adding a shortcut changes what path they take."
+  unintended_consequences:
+    description: Effects that work against our original goal
+    hint: "The fix that creates a new problem. The optimization that breaks something else."
+
+related_models:
+  - id: causal-loop-diagrams
+    reason: "CLD maps the causal chains that produce second-order effects"
+  - id: feedback-loops
+    reason: "Second-order effects often manifest as feedback loops"
+  - id: inversion
+    reason: "Invert second-order effects to find non-obvious failure paths"

@@ -1,0 +1,39 @@
+id: map-vs-territory
+name: Map vs Territory
+category: reasoning
+tags: [abstractions, assumptions, reality, diagnostic]
+description: >
+  The model of the system is not the system. Our diagrams, mental models,
+  documentation, and monitoring are maps — they are always incomplete and
+  sometimes wrong. When the map disagrees with the territory, trust the
+  territory.
+
+guiding_questions:
+  - Where does our documentation or mental model diverge from what the system actually does?
+  - What monitoring gaps mean we can't see what's really happening?
+  - Are we making decisions based on dashboards that might not reflect reality?
+  - When was the last time someone verified that the system matches the architecture diagram?
+  - What would we discover if we traced a real request end-to-end right now?
+  - Where are we confusing the name of the thing with the thing itself?
+
+required_fields:
+  maps_in_use:
+    description: The models, diagrams, and abstractions we're relying on
+    hint: "Architecture diagrams, monitoring dashboards, mental models, documentation, type systems"
+  known_divergences:
+    description: Where the map is known to disagree with reality
+    hint: "Stale docs, monitoring blind spots, simplified mental models, outdated diagrams"
+  untested_assumptions:
+    description: Where we assume the map is accurate but haven't verified
+    hint: "We think the load balancer distributes evenly — have we checked?"
+  verification_actions:
+    description: How to check the map against the territory
+    hint: "Trace a real request, read the actual config, check the actual data, observe actual behavior"
+
+related_models:
+  - id: bottom-up
+    reason: "Bottom-up troubleshooting is literally checking the territory against the map"
+  - id: occams-razor
+    reason: "When the map is wrong, Occam's razor says the simplest explanation is usually a bad assumption"
+  - id: circle-of-competence
+    reason: "Maps are less reliable outside our circle of competence"

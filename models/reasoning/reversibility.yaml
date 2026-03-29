@@ -1,0 +1,39 @@
+id: reversibility
+name: Reversibility
+category: reasoning
+tags: [decisions, risk, rollback, planning]
+description: >
+  Prefer reversible decisions over irreversible ones. Two-way doors
+  (easy to undo) deserve speed; one-way doors (hard to undo) deserve
+  caution. Most decisions are two-way doors treated as one-way doors,
+  which causes unnecessary paralysis.
+
+guiding_questions:
+  - Can this decision be easily undone? What would reversal cost?
+  - Are we treating a two-way door as a one-way door? (Move faster)
+  - Are we treating a one-way door as a two-way door? (Slow down)
+  - What is our rollback plan if this goes wrong?
+  - Can we structure this as an experiment or feature flag instead of a permanent change?
+  - What makes this irreversible — data migration, public API, contractual obligation?
+
+required_fields:
+  decision_classification:
+    description: Which decisions are reversible (two-way) vs irreversible (one-way)
+    hint: "Feature flag = two-way. Database migration dropping a column = one-way. API version = one-way."
+  reversal_costs:
+    description: For each decision, what would it cost to undo
+    hint: "Trivial (revert commit), moderate (data backfill), expensive (rebuild trust), impossible (deleted data)"
+  irreversibility_drivers:
+    description: What specifically makes one-way decisions hard to reverse
+    hint: "Data loss, external dependencies, public commitments, deployed hardware, user habits"
+  reversibility_strategies:
+    description: How to make irreversible decisions more reversible
+    hint: "Feature flags, blue-green deploys, backward-compatible migrations, soft deletes, API versioning"
+
+related_models:
+  - id: inversion
+    reason: "Invert the decision — what happens if we're wrong?"
+  - id: margin-of-safety
+    reason: "Irreversible decisions need larger margins of safety"
+  - id: second-order-thinking
+    reason: "Second-order effects of irreversible decisions are the most dangerous"

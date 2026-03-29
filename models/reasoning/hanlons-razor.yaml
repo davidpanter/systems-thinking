@@ -1,0 +1,39 @@
+id: hanlons-razor
+name: Hanlon's Razor
+category: reasoning
+tags: [diagnosis, assumptions, human-factors, diagnostic]
+description: >
+  Never attribute to malice what is adequately explained by
+  misconfiguration, ignorance, or a bad deploy. In incident response
+  and debugging, the cause is almost always a mistake, not sabotage.
+  Assuming good intent leads to faster diagnosis and better team dynamics.
+
+guiding_questions:
+  - Are we assuming this was intentional when it could be accidental?
+  - What simple mistake could produce these symptoms?
+  - Did someone change something without realizing the impact?
+  - Is there a knowledge gap that explains this behavior?
+  - Could this be a tooling or process failure rather than a human failure?
+  - Are we blaming a person when we should be blaming the system that allowed the error?
+
+required_fields:
+  accidental_explanations:
+    description: How could this have happened through honest mistakes
+    hint: "Wrong config value, misunderstood requirement, copy-paste error, forgot to update after refactor"
+  knowledge_gaps:
+    description: What information was missing that would have prevented this
+    hint: "Undocumented side effect, tribal knowledge not shared, unclear error message"
+  systemic_contributors:
+    description: What about the system or process made this mistake possible or likely
+    hint: "No validation on the config, no staging environment, no code review, confusing UI"
+  prevention_over_blame:
+    description: How to make this class of mistake harder or impossible
+    hint: "Add validation, improve docs, add guardrails, make the right thing easy and the wrong thing hard"
+
+related_models:
+  - id: occams-razor
+    reason: "Mistakes are simpler explanations than conspiracies"
+  - id: bottom-up
+    reason: "Check for simple errors at the foundation before assuming complex causes"
+  - id: circle-of-competence
+    reason: "Mistakes cluster at the edge of competence — that's not malice, it's learning"

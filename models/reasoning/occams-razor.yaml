@@ -1,0 +1,39 @@
+id: occams-razor
+name: Occam's Razor
+category: reasoning
+tags: [simplicity, diagnosis, assumptions, diagnostic]
+description: >
+  The simplest explanation consistent with the evidence is most likely
+  correct. Before chasing exotic causes, rule out the mundane ones.
+  Most outages are caused by recent changes, misconfiguration, or
+  resource exhaustion — not cosmic rays or kernel bugs.
+
+guiding_questions:
+  - What changed recently? (Deploys, config changes, data changes, traffic patterns)
+  - What's the simplest explanation that fits all the symptoms?
+  - Are we chasing a complex theory when a simple one hasn't been ruled out?
+  - Have we checked the obvious things — logs, disk space, memory, DNS, certs?
+  - Is there a single cause that explains all the symptoms, or are we assuming multiple?
+  - What would a junior engineer check first? Have we actually checked that?
+
+required_fields:
+  simple_explanations:
+    description: The most mundane explanations that fit the evidence
+    hint: "Bad deploy, expired cert, full disk, DNS change, config typo, dependency update"
+  evidence_fit:
+    description: How well does each simple explanation account for all symptoms?
+    hint: "If the simple explanation doesn't explain symptom X, it might still be the cause — symptom X might be unrelated"
+  complex_explanations_deferred:
+    description: Exotic theories to investigate only after simple ones are ruled out
+    hint: "Race condition, kernel bug, hardware failure, cosmic bit flip — possible but unlikely"
+  ruling_out_steps:
+    description: How to quickly confirm or rule out each simple explanation
+    hint: "Check the deploy log, verify the cert, df -h, dig the domain — fast checks first"
+
+related_models:
+  - id: binary-search
+    reason: "Binary search efficiently rules out explanations"
+  - id: bottom-up
+    reason: "Bottom-up starts with the simplest, most foundational checks"
+  - id: map-vs-territory
+    reason: "When the map is wrong, Occam's says the simplest map error is most likely"

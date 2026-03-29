@@ -1,0 +1,39 @@
+id: margin-of-safety
+name: Margin of Safety
+category: reasoning
+tags: [buffers, resilience, uncertainty, planning]
+description: >
+  Build in capacity for the unknown. Systems should work not just under
+  expected conditions, but under conditions worse than expected. The
+  margin between what you designed for and what actually happens is your
+  margin of safety. The less you know, the larger the margin should be.
+
+guiding_questions:
+  - What load/traffic/volume is this designed for? What's the actual headroom?
+  - What happens at 2x the expected load? 5x?
+  - Where are we running close to capacity with no margin?
+  - What unknowns are we not accounting for?
+  - If our estimates are wrong by 50%, does the system still work?
+  - Where have past estimates been most wrong, and how do we account for that?
+
+required_fields:
+  current_margins:
+    description: Where margins exist and how large they are
+    hint: "CPU at 40% (60% margin), disk at 80% (20% margin), queue depth sized for 2x peak"
+  thin_margins:
+    description: Where the system is running close to its limits
+    hint: "Connection pool nearly full, memory at 85%, rate limit just above normal traffic"
+  unknown_unknowns:
+    description: What we don't know that could consume our margins
+    hint: "Traffic spike from viral content, data growth from new feature, dependency slowdown"
+  margin_improvements:
+    description: Where to build in more margin and at what cost
+    hint: "Overprovision the database, add circuit breakers, size queues for 3x peak, keep disk under 60%"
+
+related_models:
+  - id: buffers
+    reason: "Buffers are the physical implementation of margin of safety"
+  - id: inversion
+    reason: "Inversion reveals what the margin needs to protect against"
+  - id: circle-of-competence
+    reason: "Build larger margins in areas outside your circle of competence"

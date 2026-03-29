@@ -1,0 +1,39 @@
+id: inversion
+name: Inversion
+category: reasoning
+tags: [failure, backwards, prevention, planning, diagnostic]
+description: >
+  Think backwards from failure instead of forward from success. Instead
+  of asking "how do we make this work?" ask "how could this fail?" and
+  prevent that. Inversion reveals risks, assumptions, and failure modes
+  that forward thinking misses.
+
+guiding_questions:
+  - What would guarantee this project fails?
+  - What are we assuming will go right that might not?
+  - If this system is down in 6 months, what caused it?
+  - What would a critic or adversary point to as the weakest link?
+  - What's the opposite of what we're trying to achieve, and how could that happen?
+  - If we wanted to make this problem worse, what would we do?
+
+required_fields:
+  failure_scenarios:
+    description: Ways this could fail, working backwards from catastrophe
+    hint: "Imagine the post-mortem — what went wrong? Data loss, performance collapse, security breach, user abandonment"
+  assumptions_at_risk:
+    description: Assumptions we're making that, if wrong, would cause failure
+    hint: "We assume the API is reliable, we assume the data fits in memory, we assume users behave rationally"
+  prevention_strategies:
+    description: How to prevent each failure scenario
+    hint: "For each way it could fail, what's the cheapest way to make that impossible or unlikely?"
+  blind_spots:
+    description: What are we not thinking about that inversion revealed?
+    hint: "The failure scenarios that surprised you — those are the blind spots"
+
+related_models:
+  - id: failure-modes
+    reason: "Inversion generates the failure scenarios that failure mode analysis formalizes"
+  - id: margin-of-safety
+    reason: "Inversion identifies what to build margins against"
+  - id: second-order-thinking
+    reason: "Inversion of second-order effects reveals non-obvious failure paths"

@@ -1,0 +1,39 @@
+id: circle-of-competence
+name: Circle of Competence
+category: reasoning
+tags: [expertise, risk, knowledge, planning]
+description: >
+  Know the boundary between what you understand deeply and what you
+  don't. Operating inside your circle produces good decisions. Operating
+  outside it — without recognizing you're outside — produces confidently
+  wrong decisions. The edge of the circle is where you need help.
+
+guiding_questions:
+  - Which parts of this system do we understand deeply from experience?
+  - Which parts are we guessing about or reasoning by analogy?
+  - Where have we been burned before by overestimating our understanding?
+  - Who has expertise in the areas where we're weak?
+  - Are we making this decision based on knowledge or assumption?
+  - What would we need to learn to bring this inside our circle?
+
+required_fields:
+  inside_circle:
+    description: Areas where the team has deep, proven expertise
+    hint: "Technologies, patterns, and domains where you've done this before and know the pitfalls"
+  outside_circle:
+    description: Areas where the team is operating beyond its expertise
+    hint: "New languages, unfamiliar infrastructure, domains you've never worked in, security, compliance"
+  risk_from_ignorance:
+    description: What could go wrong because of what we don't know?
+    hint: "The risks you can't see because you don't know what you don't know"
+  competence_strategy:
+    description: How to handle work outside the circle — learn, hire, consult, or avoid
+    hint: "Get expert review, prototype to learn, hire someone who's done it, or simplify to stay inside the circle"
+
+related_models:
+  - id: map-vs-territory
+    reason: "Outside your circle of competence, your map of the territory is least reliable"
+  - id: margin-of-safety
+    reason: "Build larger margins in areas outside your circle"
+  - id: kiss
+    reason: "Staying inside your circle often means choosing the simpler approach"
