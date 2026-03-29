@@ -12,6 +12,11 @@ export interface RelatedModel {
   reason: string;
 }
 
+export interface CounterbalanceModel {
+  id: string;
+  tension: string; // What productive tension does this create?
+}
+
 export interface ModelDefinition {
   id: string;
   name: string;
@@ -21,6 +26,7 @@ export interface ModelDefinition {
   guiding_questions: string[];
   required_fields: Record<string, RequiredFieldDef>;
   related_models: RelatedModel[];
+  counterbalances: CounterbalanceModel[];
 }
 
 // --- Session State ---

@@ -3,7 +3,12 @@ import type {
   LensApplication,
   LensSuggestion,
   CrossReference,
+  CounterbalanceModel,
 } from "./types.js";
+
+export interface CounterbalanceSuggestion extends LensSuggestion {
+  tension: string;
+}
 
 /**
  * Tokenize text into lowercase words for matching.
@@ -128,6 +133,33 @@ export function getRelatedSuggestions(
         modelId: model.id,
         name: model.name,
         reason: r.reason,
+        guidingQuestions: model.guiding_questions,
+        requiredFields: model.required_fields,
+      };
+    });
+}
+
+/**
+ * Get counterbalancing model suggestions — models that provide a
+ * deliberately opposing perspective to create productive tension.
+ */
+export function getCounterbalanceSuggestions(
+  currentModel: ModelDefinition,
+  allModels: ModelDefinition[],
+  appliedModelIds: string[]
+): CounterbalanceSuggestion[] {
+  const applied = new Set(appliedModelIds);
+  const modelMap = new Map(allModels.map((m) => [m.id, m]));
+
+  return currentModel.counterbalances
+    .filter((c) => !applied.has(c.id) && modelMap.has(c.id))
+    .map((c) => {
+      const model = modelMap.get(c.id)!;
+      return {
+        modelId: model.id,
+        name: model.name,
+        reason: `COUNTERBALANCE: ${c.tension}`,
+        tension: c.tension,
         guidingQuestions: model.guiding_questions,
         requiredFields: model.required_fields,
       };

@@ -26,6 +26,9 @@ const testModels: ModelDefinition[] = [
     related_models: [
       { id: "queuing-theory", reason: "Quantify wait times at constraint" },
     ],
+    counterbalances: [
+      { id: "kiss", tension: "Constraint optimization can add complexity — is the simplest solution good enough?" },
+    ],
   },
   {
     id: "queuing-theory",
@@ -41,6 +44,25 @@ const testModels: ModelDefinition[] = [
       },
     },
     related_models: [],
+    counterbalances: [],
+  },
+  {
+    id: "kiss",
+    name: "KISS",
+    category: "architecture",
+    tags: ["simplicity", "complexity", "readability", "planning"],
+    description: "Keep it simple — complexity is the enemy of reliability",
+    guiding_questions: ["What is the simplest version?"],
+    required_fields: {
+      complexity_inventory: {
+        description: "Sources of complexity",
+        hint: "What could be simpler?",
+      },
+    },
+    related_models: [],
+    counterbalances: [
+      { id: "constraints", tension: "Simplicity may ignore real bottlenecks that need targeted optimization" },
+    ],
   },
 ];
 
@@ -65,6 +87,28 @@ describe("SystemsThinkingServer", () => {
         problem: "throughput bottleneck causing high latency",
       });
       expect(result.suggestedLenses.length).toBeGreaterThan(0);
+    });
+
+    it("returns a recommendedSequence of up to 3 models", () => {
+      const result = server.startAnalysis({
+        problem: "throughput bottleneck causing high latency",
+      });
+      expect(result.recommendedSequence.length).toBeGreaterThan(0);
+      expect(result.recommendedSequence.length).toBeLessThanOrEqual(3);
+      expect(result.workflow).toContain("RECOMMENDED");
+    });
+
+    it("includes counterbalance in recommendedSequence when available", () => {
+      const result = server.startAnalysis({
+        problem: "throughput bottleneck capacity",
+      });
+      // constraints should be the top match, and it has kiss as a counterbalance
+      const ids = result.recommendedSequence.map((s) => s.modelId);
+      if (ids.includes("constraints")) {
+        expect(ids).toContain("kiss");
+        const kissEntry = result.recommendedSequence.find((s) => s.modelId === "kiss");
+        expect(kissEntry?.reason).toContain("Counterbalance");
+      }
     });
 
     it("creates independent sessions on duplicate calls", () => {
@@ -139,7 +183,7 @@ describe("SystemsThinkingServer", () => {
       expect(result.availableModels).toBeDefined();
     });
 
-    it("returns suggestedNextLenses from related_models", () => {
+    it("returns complementary lenses from related_models", () => {
       const { sessionId } = server.startAnalysis({ problem: "test" });
       const result = server.applyLens({
         sessionId,
@@ -150,11 +194,27 @@ describe("SystemsThinkingServer", () => {
           exploitation: "Pooling",
         },
       });
-      const ids = result.suggestedNextLenses!.map((s) => s.modelId);
+      const ids = result.nextSteps!.complementary.map((s) => s.modelId);
       expect(ids).toContain("queuing-theory");
     });
 
-    it("excludes already-applied lenses from suggestedNextLenses", () => {
+    it("returns counterbalance suggestions", () => {
+      const { sessionId } = server.startAnalysis({ problem: "test" });
+      const result = server.applyLens({
+        sessionId,
+        modelId: "constraints",
+        analysis: "Found bottleneck",
+        findings: {
+          binding_constraint: "DB",
+          exploitation: "Pooling",
+        },
+      });
+      expect(result.nextSteps!.counterbalances.length).toBeGreaterThan(0);
+      expect(result.nextSteps!.counterbalances[0].modelId).toBe("kiss");
+      expect(result.nextSteps!.counterbalances[0].tension).toBeDefined();
+    });
+
+    it("excludes already-applied lenses from next steps", () => {
       const { sessionId } = server.startAnalysis({ problem: "throughput bottleneck" });
       server.applyLens({
         sessionId,
@@ -168,9 +228,39 @@ describe("SystemsThinkingServer", () => {
         analysis: "Analyzing queues",
         findings: { arrival_rate: "500/s" },
       });
-      const ids = result.suggestedNextLenses!.map((s) => s.modelId);
-      expect(ids).not.toContain("constraints");
-      expect(ids).not.toContain("queuing-theory");
+      const allIds = [
+        ...result.nextSteps!.complementary.map((s) => s.modelId),
+        ...result.nextSteps!.counterbalances.map((s) => s.modelId),
+      ];
+      expect(allIds).not.toContain("constraints");
+      expect(allIds).not.toContain("queuing-theory");
+    });
+
+    it("returns analysisDepth based on lens count", () => {
+      const { sessionId } = server.startAnalysis({ problem: "test" });
+      const r1 = server.applyLens({
+        sessionId,
+        modelId: "constraints",
+        analysis: "First lens",
+        findings: { binding_constraint: "DB", exploitation: "Pooling" },
+      });
+      expect(r1.analysisDepth).toContain("shallow");
+
+      const r2 = server.applyLens({
+        sessionId,
+        modelId: "queuing-theory",
+        analysis: "Second lens",
+        findings: { arrival_rate: "500/s" },
+      });
+      expect(r2.analysisDepth).toContain("moderate");
+
+      const r3 = server.applyLens({
+        sessionId,
+        modelId: "kiss",
+        analysis: "Third lens",
+        findings: { complexity_inventory: "Too complex" },
+      });
+      expect(r3.analysisDepth).toContain("thorough");
     });
 
     it("returns crossReferences from prior lenses", () => {
@@ -195,15 +285,23 @@ describe("SystemsThinkingServer", () => {
   });
 
   describe("synthesize", () => {
-    it("returns full session with synthesis", () => {
+    it("returns full session with synthesis and connections", () => {
       const { sessionId } = server.startAnalysis({ problem: "Slow system" });
       server.applyLens({
         sessionId,
         modelId: "constraints",
         analysis: "DB bottleneck",
         findings: {
-          binding_constraint: "DB writes",
+          binding_constraint: "DB writes cause throughput limit",
           exploitation: "Connection pooling",
+        },
+      });
+      server.applyLens({
+        sessionId,
+        modelId: "queuing-theory",
+        analysis: "Queue analysis",
+        findings: {
+          arrival_rate: "500 req/s exceeds throughput capacity",
         },
       });
       const result = server.synthesize({
@@ -212,8 +310,9 @@ describe("SystemsThinkingServer", () => {
         recommendations: ["Add read replicas", "Implement caching"],
       });
       expect(result.problem).toBe("Slow system");
-      expect(result.lensesApplied).toHaveLength(1);
+      expect(result.lensesApplied).toHaveLength(2);
       expect(result.recommendations).toHaveLength(2);
+      expect(result.connectionsFound).toBeDefined();
     });
 
     it("warns when synthesizing with zero lenses", () => {

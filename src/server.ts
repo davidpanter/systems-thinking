@@ -6,7 +6,8 @@ import type {
   LensSuggestion,
   CrossReference,
 } from "./types.js";
-import { suggestLenses, findCrossReferences, getRelatedSuggestions } from "./matcher.js";
+import { suggestLenses, findCrossReferences, getRelatedSuggestions, getCounterbalanceSuggestions } from "./matcher.js";
+import type { CounterbalanceSuggestion } from "./matcher.js";
 
 export class SystemsThinkingServer {
   private models: ModelDefinition[];
@@ -26,6 +27,8 @@ export class SystemsThinkingServer {
     sessionId: string;
     problem: string;
     suggestedLenses: LensSuggestion[];
+    recommendedSequence: Array<{ modelId: string; name: string; reason: string }>;
+    workflow: string;
   } {
     const sessionId = randomUUID().slice(0, 12);
     const session: Session = {
@@ -42,10 +45,41 @@ export class SystemsThinkingServer {
       .filter(Boolean)
       .join(" ");
 
+    const suggested = suggestLenses(searchText, this.models, []);
+
+    // Build a recommended sequence of 3 from top suggestions
+    // If a top suggestion has a counterbalance, slot it in as the second lens
+    const sequence: Array<{ modelId: string; name: string; reason: string }> = [];
+    if (suggested.length > 0) {
+      const first = suggested[0];
+      sequence.push({ modelId: first.modelId, name: first.name, reason: "Primary lens — strongest match to your problem" });
+
+      // Look for a counterbalance to the first lens
+      const firstModel = this.modelMap.get(first.modelId);
+      const counterbalance = firstModel?.counterbalances.find(
+        (c) => this.modelMap.has(c.id)
+      );
+      if (counterbalance) {
+        const cbModel = this.modelMap.get(counterbalance.id)!;
+        sequence.push({ modelId: cbModel.id, name: cbModel.name, reason: `Counterbalance — ${counterbalance.tension}` });
+      } else if (suggested.length > 1) {
+        sequence.push({ modelId: suggested[1].modelId, name: suggested[1].name, reason: "Complementary perspective" });
+      }
+
+      // Third: next best that isn't already in the sequence
+      const usedIds = new Set(sequence.map((s) => s.modelId));
+      const third = suggested.find((s) => !usedIds.has(s.modelId));
+      if (third) {
+        sequence.push({ modelId: third.modelId, name: third.name, reason: "Additional perspective for depth" });
+      }
+    }
+
     return {
       sessionId,
       problem: input.problem,
-      suggestedLenses: suggestLenses(searchText, this.models, []),
+      suggestedLenses: suggested,
+      recommendedSequence: sequence,
+      workflow: `RECOMMENDED: Apply these ${sequence.length} lenses in order, then call synthesize to integrate findings.`,
     };
   }
 
@@ -63,8 +97,13 @@ export class SystemsThinkingServer {
     requiredFields?: ModelDefinition["required_fields"];
     missingFields?: string[];
     crossReferences?: CrossReference[];
-    suggestedNextLenses?: LensSuggestion[];
     sessionSummary?: { problem: string; lensesApplied: string[] };
+    analysisDepth?: string;
+    nextSteps?: {
+      counterbalances: CounterbalanceSuggestion[];
+      complementary: LensSuggestion[];
+      message: string;
+    };
     error?: string;
     availableSessions?: string[];
     availableModels?: string[];
@@ -106,8 +145,9 @@ export class SystemsThinkingServer {
     const priorLenses = session.lenses.slice(0, -1);
     const crossReferences = findCrossReferences(priorLenses, model);
 
-    // Suggested next lenses: related_models + tag matching
+    // Suggested next lenses: counterbalances + related + tag matching
     const appliedIds = session.lenses.map((l) => l.modelId);
+    const counterbalances = getCounterbalanceSuggestions(model, this.models, appliedIds);
     const relatedSuggestions = getRelatedSuggestions(model, this.models, appliedIds);
 
     const searchText = [session.problem, session.context, session.scope]
@@ -115,15 +155,27 @@ export class SystemsThinkingServer {
       .join(" ");
     const tagSuggestions = suggestLenses(searchText, this.models, appliedIds, 3);
 
-    // Merge: related first, then tag-based, deduplicate
+    // Merge complementary: related first, then tag-based, deduplicate, exclude counterbalances
+    const counterbalanceIds = new Set(counterbalances.map((c) => c.modelId));
     const seen = new Set<string>();
-    const suggestedNextLenses: LensSuggestion[] = [];
+    const complementary: LensSuggestion[] = [];
     for (const s of [...relatedSuggestions, ...tagSuggestions]) {
-      if (!seen.has(s.modelId)) {
+      if (!seen.has(s.modelId) && !counterbalanceIds.has(s.modelId)) {
         seen.add(s.modelId);
-        suggestedNextLenses.push(s);
+        complementary.push(s);
       }
     }
+
+    // Analysis depth based on lens count
+    const lensCount = session.lenses.length;
+    const analysisDepth = lensCount === 1 ? "shallow — single perspective only"
+      : lensCount === 2 ? "moderate — two perspectives applied"
+      : `thorough — ${lensCount} perspectives applied`;
+
+    // Next steps message
+    const depthMessage = lensCount < 3
+      ? `Lens ${lensCount} applied. Apply ${3 - lensCount} more before synthesizing for meaningful cross-lens insight.`
+      : `${lensCount} lenses applied — good depth. Consider synthesizing now, or apply another lens if gaps remain.`;
 
     return {
       modelId: input.modelId,
@@ -131,10 +183,15 @@ export class SystemsThinkingServer {
       requiredFields: model.required_fields,
       missingFields,
       crossReferences,
-      suggestedNextLenses: suggestedNextLenses.slice(0, 3),
       sessionSummary: {
         problem: session.problem,
         lensesApplied: session.lenses.map((l) => l.modelId),
+      },
+      analysisDepth,
+      nextSteps: {
+        counterbalances: counterbalances.slice(0, 2),
+        complementary: complementary.slice(0, 2),
+        message: depthMessage,
       },
     };
   }
@@ -154,6 +211,10 @@ export class SystemsThinkingServer {
       findings: Record<string, string>;
       observations?: string;
       confidence?: string;
+    }>;
+    connectionsFound?: Array<{
+      between: [string, string];
+      connection: string;
     }>;
     synthesis?: string;
     recommendations?: string[];
@@ -178,6 +239,25 @@ export class SystemsThinkingServer {
         ? "No lenses applied yet — synthesis will be based on the problem statement alone."
         : undefined;
 
+    // Find cross-lens connections: for each lens pair, find cross-references
+    const connectionsFound: Array<{
+      between: [string, string];
+      connection: string;
+    }> = [];
+    for (let i = 0; i < session.lenses.length; i++) {
+      for (let j = i + 1; j < session.lenses.length; j++) {
+        const laterModel = this.modelMap.get(session.lenses[j].modelId);
+        if (!laterModel) continue;
+        const refs = findCrossReferences([session.lenses[i]], laterModel);
+        for (const ref of refs) {
+          connectionsFound.push({
+            between: [session.lenses[i].modelId, session.lenses[j].modelId],
+            connection: `${ref.fromLens}/${ref.findingKey} ↔ ${session.lenses[j].modelId}: ${ref.relevance}`,
+          });
+        }
+      }
+    }
+
     // Suggest lenses that might fill gaps
     const appliedIds = session.lenses.map((l) => l.modelId);
     const searchText = [session.problem, session.context, input.gaps]
@@ -200,6 +280,7 @@ export class SystemsThinkingServer {
         observations: l.observations,
         confidence: l.confidence,
       })),
+      connectionsFound,
       synthesis: input.synthesis,
       recommendations: input.recommendations,
       contradictions: input.contradictions,

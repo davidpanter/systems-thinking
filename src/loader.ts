@@ -36,6 +36,7 @@ export async function loadModelsFromDirectory(
         guiding_questions: (parsed.guiding_questions as string[]) || [],
         required_fields: (parsed.required_fields as ModelDefinition["required_fields"]) || {},
         related_models: (parsed.related_models as ModelDefinition["related_models"]) || [],
+        counterbalances: (parsed.counterbalances as ModelDefinition["counterbalances"]) || [],
       };
 
       models.push(model);

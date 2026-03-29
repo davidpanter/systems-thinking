@@ -14,6 +14,7 @@ const mockModels: ModelDefinition[] = [
       arrival_rate: { description: "Request arrival rate", hint: "Requests per second" },
     },
     related_models: [{ id: "buffers", reason: "Buffers absorb queue overflow" }],
+    counterbalances: [],
   },
   {
     id: "bottom-up",
@@ -26,6 +27,7 @@ const mockModels: ModelDefinition[] = [
       assumptions_challenged: { description: "Assumptions tested", hint: "What did you verify?" },
     },
     related_models: [],
+    counterbalances: [],
   },
   {
     id: "caches",
@@ -38,6 +40,7 @@ const mockModels: ModelDefinition[] = [
       cache_layers: { description: "Identified cache layers", hint: "List all caches" },
     },
     related_models: [],
+    counterbalances: [],
   },
 ];
 

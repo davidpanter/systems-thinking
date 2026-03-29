@@ -15,3 +15,7 @@ required_fields:
 related_models:
   - id: other-model
     reason: "For testing relationships"
+
+counterbalances:
+  - id: anti-model
+    tension: "For testing counterbalances"
