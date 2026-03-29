@@ -1,0 +1,38 @@
+id: leverage-points
+name: Leverage Points
+category: operations
+tags: [intervention, impact, efficiency, strategy]
+description: >
+  Find where small changes produce disproportionate system-wide effects.
+  Based on Donella Meadows' hierarchy — from parameters (weak) to paradigms
+  (powerful). Most interventions target low-leverage points.
+
+guiding_questions:
+  - Where have small changes had outsized effects in this system before?
+  - Are we adjusting parameters (weak) or restructuring feedback loops (strong)?
+  - What are the rules of the system? Can they be changed?
+  - What information flows are missing or delayed?
+  - Is there a self-organizing structure we could enable or redirect?
+  - What goals or metrics are driving behavior? Are they the right ones?
+
+required_fields:
+  leverage_points_identified:
+    description: Points where intervention would have disproportionate effect
+    hint: "Ranked from low to high leverage using Meadows' hierarchy if applicable"
+  current_interventions:
+    description: Where effort is currently being applied
+    hint: "Are we pushing on high-leverage or low-leverage points?"
+  highest_leverage:
+    description: The single most impactful intervention available
+    hint: "The one change that would matter most — even if it is hard"
+  intervention_risks:
+    description: Risks of intervening at each leverage point
+    hint: "High-leverage points are powerful but can backfire spectacularly"
+
+related_models:
+  - id: constraints
+    reason: "The binding constraint is often a leverage point"
+  - id: feedback-loops
+    reason: "Changing feedback loop structure is high-leverage"
+  - id: causal-loop-diagrams
+    reason: "The causal map reveals where leverage points exist"

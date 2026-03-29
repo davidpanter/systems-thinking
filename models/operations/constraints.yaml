@@ -1,0 +1,40 @@
+id: constraints
+name: Constraint Analysis
+category: operations
+tags: [bottleneck, throughput, capacity, planning]
+description: >
+  Identify the binding constraint that limits overall system throughput.
+  Based on Theory of Constraints — the system can only perform as well
+  as its most constrained component.
+
+guiding_questions:
+  - What is the desired output/throughput of this system?
+  - Where does work pile up or wait?
+  - Which component, if improved, would improve the whole system?
+  - Are there constraints we are working around without realizing it?
+  - Is this constraint physical, policy-based, or market-based?
+
+required_fields:
+  identified_constraints:
+    description: List of constraints found, ranked by impact
+    hint: "Include both obvious bottlenecks and hidden policy constraints"
+  binding_constraint:
+    description: The single constraint currently limiting the system
+    hint: "There is usually one that dominates — which is it?"
+  exploitation:
+    description: How to maximize throughput without changing the constraint
+    hint: "Before adding capacity, are we fully using what we have?"
+  elevation:
+    description: How to increase capacity of the constraint itself
+    hint: "What would it take to remove this as the bottleneck?"
+  subordination:
+    description: How other components should adapt to the constraint
+    hint: "Non-bottlenecks producing faster than the constraint just creates inventory"
+
+related_models:
+  - id: queuing-theory
+    reason: "Queuing analysis can quantify the wait times at the constraint"
+  - id: buffers
+    reason: "Buffer sizing protects the constraint from starvation"
+  - id: leverage-points
+    reason: "The binding constraint is often a high-leverage intervention point"

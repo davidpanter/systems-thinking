@@ -1,0 +1,38 @@
+id: queuing-theory
+name: Queuing Theory
+category: operations
+tags: [throughput, latency, waiting, load]
+description: >
+  Analyze arrival rates, service rates, wait times, and queue stability.
+  When arrival rate approaches service rate, wait times grow nonlinearly.
+  Most performance problems are queuing problems in disguise.
+
+guiding_questions:
+  - Where do requests/work items queue up in this system?
+  - What is the arrival rate? What is the service rate?
+  - How does utilization relate to latency? (Hint — nonlinear above ~70%)
+  - What happens during traffic spikes? Is there backpressure?
+  - Are there multiple servers/workers? How is work distributed?
+  - What is the variance in service time? (High variance = worse queuing)
+
+required_fields:
+  queues_identified:
+    description: Where work queues in the system
+    hint: "Request queues, job queues, message queues, connection queues, lock waits"
+  arrival_vs_service:
+    description: Arrival rate vs. service rate at each queue
+    hint: "If arrival > service even briefly, the queue grows"
+  utilization_analysis:
+    description: Utilization levels and their effect on latency
+    hint: "At 80% utilization, a single-server queue averages 4x the service time in wait"
+  stability_assessment:
+    description: Is each queue stable (draining faster than filling) under normal and peak load?
+    hint: "Unstable queues grow without bound — they must be addressed"
+
+related_models:
+  - id: buffers
+    reason: "Buffers are sized queues — queuing theory informs buffer sizing"
+  - id: constraints
+    reason: "The queue that grows fastest is likely at the constraint"
+  - id: stock-and-flow
+    reason: "Queues are stocks; arrival/service rates are flows"

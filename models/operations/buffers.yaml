@@ -1,0 +1,38 @@
+id: buffers
+name: Buffers & Buffer Sizing
+category: operations
+tags: [capacity, overflow, starvation, resilience]
+description: >
+  Evaluate where buffers exist, whether they are sized correctly, and the
+  risks of overflow or starvation. Buffers absorb variability — too small
+  and they overflow, too large and they hide problems.
+
+guiding_questions:
+  - Where are the explicit buffers? (queues, pools, caches, inventories)
+  - Where are the implicit buffers? (retry queues, OS buffers, TCP windows)
+  - What happens when a buffer overflows? Data loss? Backpressure? Crash?
+  - What happens when a buffer starves? (Idle workers, empty cache, pool exhaustion)
+  - Are buffers sized for normal load or peak load?
+  - Are any buffers hiding problems by absorbing symptoms?
+
+required_fields:
+  buffers_identified:
+    description: All buffers in the system — explicit and implicit
+    hint: "Connection pools, message queues, OS socket buffers, caches, rate limiter token buckets"
+  sizing_assessment:
+    description: Is each buffer appropriately sized for its purpose?
+    hint: "Too small = overflow risk. Too large = memory waste and latency hiding"
+  overflow_behavior:
+    description: What happens when each buffer fills up?
+    hint: "Drop? Block? Spill to disk? Return error? Silently lose data?"
+  starvation_risks:
+    description: What happens when each buffer empties?
+    hint: "Idle consumers, cache misses, cold starts"
+
+related_models:
+  - id: queuing-theory
+    reason: "Queuing math informs optimal buffer sizing"
+  - id: constraints
+    reason: "Place the largest buffers in front of the constraint"
+  - id: failure-modes
+    reason: "Buffer overflow and starvation are common failure modes"
