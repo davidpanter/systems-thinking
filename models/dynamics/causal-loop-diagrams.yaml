@@ -1,0 +1,38 @@
+id: causal-loop-diagrams
+name: Causal Loop Diagrams
+category: dynamics
+tags: [causality, visualization, feedback, mental-models]
+description: >
+  Map cause-effect chains to reveal circular causality, unintended
+  consequences, and mental model gaps. CLD makes hidden assumptions
+  about causation explicit and testable.
+
+guiding_questions:
+  - What causes what in this system? Can you draw the arrows?
+  - Are there circular causal chains (A causes B causes A)?
+  - What unintended consequences have past changes produced?
+  - Where do different people's mental models of causation disagree?
+  - Are there delayed effects that are easy to miss?
+  - What assumptions about cause and effect have we not tested?
+
+required_fields:
+  causal_chains:
+    description: Key cause-effect relationships in the system
+    hint: "A → B → C. Use + for same-direction, - for opposite-direction effects"
+  circular_causality:
+    description: Loops where effects feed back to causes
+    hint: "These are the feedback loops — reinforcing (+) or balancing (-)"
+  hidden_assumptions:
+    description: Causal assumptions that are untested or contested
+    hint: "Do we actually know that A causes B, or do we just assume it?"
+  unintended_consequences:
+    description: Past or potential side effects of interventions
+    hint: "Fixing X made Y worse because we didn't see the connection"
+
+related_models:
+  - id: feedback-loops
+    reason: "CLD reveals the feedback loops driving system behavior"
+  - id: leverage-points
+    reason: "The causal map shows where interventions propagate most widely"
+  - id: system-dynamics
+    reason: "CLD is the qualitative foundation for dynamic modeling"

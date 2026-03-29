@@ -1,0 +1,38 @@
+id: stock-and-flow
+name: Stock & Flow
+category: dynamics
+tags: [accumulation, rates, inventory, capacity]
+description: >
+  Map accumulations (stocks) and the rates (flows) that change them.
+  Stocks are the state of the system at any moment; flows are the
+  rates of change. Understanding this distinction clarifies cause and effect.
+
+guiding_questions:
+  - What are the key stocks (things that accumulate) in this system?
+  - What inflows increase each stock? What outflows decrease it?
+  - Are any stocks growing unbounded? What constrains them?
+  - Where is the system's memory? (Stocks remember; flows forget)
+  - Are we confusing stocks with flows? (e.g., revenue vs. profit)
+  - What happens to behavior when a stock is depleted or overflowing?
+
+required_fields:
+  stocks:
+    description: Key accumulations in the system
+    hint: "Queues, caches, connection pools, account balances, backlogs, inventories"
+  inflows:
+    description: What increases each stock and at what rate
+    hint: "Requests arriving, data ingested, users signing up"
+  outflows:
+    description: What decreases each stock and at what rate
+    hint: "Requests processed, data expired, users churning"
+  equilibrium_analysis:
+    description: Where inflows and outflows balance (or don't)
+    hint: "If inflow > outflow, the stock grows — is that sustainable?"
+
+related_models:
+  - id: source-sink
+    reason: "Sources feed inflows; sinks receive outflows"
+  - id: buffers
+    reason: "Buffers are stocks deliberately placed to absorb flow variability"
+  - id: queuing-theory
+    reason: "Queues are stocks; arrival and service rates are flows"

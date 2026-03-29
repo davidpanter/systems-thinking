@@ -1,0 +1,38 @@
+id: system-dynamics
+name: System Dynamics
+category: dynamics
+tags: [temporal, behavior, trends, prediction]
+description: >
+  Model how system behavior evolves over time. Focus on delays,
+  oscillations, exponential growth or decay, and tipping points.
+  Systems rarely respond linearly or instantly.
+
+guiding_questions:
+  - How does the system behave differently under low vs. high load?
+  - Where are the significant delays in the system?
+  - Are there behaviors that compound over time (growth, decay, debt)?
+  - What oscillations or cycles exist? What drives them?
+  - Are there tipping points where behavior changes qualitatively?
+  - What does the system look like in 6 months if current trends continue?
+
+required_fields:
+  temporal_behaviors:
+    description: Key behaviors that change over time
+    hint: "Growth curves, decay patterns, cyclical behaviors, seasonal effects"
+  delays:
+    description: Significant delays and their effects on system behavior
+    hint: "Processing delays, propagation delays, human response delays"
+  nonlinearities:
+    description: Points where behavior changes disproportionately
+    hint: "Tipping points, saturation, exponential growth triggers"
+  trend_projections:
+    description: Where current trends lead if unaddressed
+    hint: "Technical debt compounding, queue growth, resource exhaustion"
+
+related_models:
+  - id: feedback-loops
+    reason: "Feedback loops are the primary driver of dynamic behavior"
+  - id: stock-and-flow
+    reason: "Stock/flow models formalize dynamic behavior over time"
+  - id: causal-loop-diagrams
+    reason: "CLD maps the causal structure behind dynamic behavior"

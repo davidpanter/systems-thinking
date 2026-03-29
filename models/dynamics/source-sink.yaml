@@ -1,0 +1,36 @@
+id: source-sink
+name: Source & Sink
+category: dynamics
+tags: [data-flow, inputs, outputs, lifecycle]
+description: >
+  Trace where inputs originate (sources) and where outputs or waste terminate
+  (sinks). Understanding sources and sinks reveals hidden dependencies,
+  resource constraints, and cleanup responsibilities.
+
+guiding_questions:
+  - Where does data/work/resources enter this system?
+  - Where does it leave? Is anything accumulating without a sink?
+  - Are there sources we're not aware of or not controlling?
+  - What happens when a source is unavailable or produces bad data?
+  - Are sinks being overwhelmed? Are they cleaning up properly?
+  - Is there a lifecycle for each resource from source to sink?
+
+required_fields:
+  sources_identified:
+    description: All inputs — where data, work, or resources originate
+    hint: "User input, API calls, event streams, scheduled jobs, file imports"
+  sinks_identified:
+    description: All outputs — where data, work, or resources terminate
+    hint: "Databases, logs, external APIs, garbage collection, archives"
+  accumulation_risks:
+    description: Places where things accumulate without adequate drainage
+    hint: "Growing queues, unbounded logs, orphaned records, memory leaks"
+  lifecycle_gaps:
+    description: Resources that lack a clear path from creation to cleanup
+    hint: "Temporary files, sessions, cache entries without TTL"
+
+related_models:
+  - id: stock-and-flow
+    reason: "Stock & flow formalizes the accumulation between sources and sinks"
+  - id: buffers
+    reason: "Buffers sit between sources and sinks — sizing matters"
