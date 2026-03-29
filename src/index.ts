@@ -73,17 +73,26 @@ After starting, use apply_lens to examine the problem through specific models, t
 
 mcpServer.registerTool("apply_lens", {
   title: "Apply Lens",
-  description: `Apply a systems thinking model to the current problem. Each model provides guiding questions and expects specific findings.
+  description: `Apply a systems thinking model to the current problem.
+
+IMPORTANT: The "analysis" parameter is your narrative analysis text. The "findings" parameter is a JSON object where keys are the model's required field names and values are your findings for each. Do NOT pass finding fields as top-level parameters — they must be nested inside the "findings" object.
+
+Example call structure:
+{
+  "sessionId": "abc123",
+  "modelId": "stock-and-flow",
+  "analysis": "Your narrative analysis through this lens...",
+  "findings": {
+    "stocks": "Your finding about stocks...",
+    "inflows": "Your finding about inflows...",
+    "outflows": "Your finding about outflows...",
+    "equilibrium_analysis": "Your finding about equilibrium..."
+  }
+}
 
 Available models: ${models.map((m) => `${m.id} (${m.name})`).join(", ")}
 
-The tool returns:
-- guidingQuestions and requiredFields for the model (reference)
-- missingFields if any required findings were not provided (soft reminder)
-- crossReferences to prior lens findings that may be relevant
-- suggestedNextLenses with full guiding questions and required fields
-
-Can be called multiple times per session to build composable analysis. Allowed after synthesize (session stays open).`,
+Can be called multiple times per session. Allowed after synthesize.`,
   inputSchema: ApplyLensInput,
 }, async (args) => {
   const result = thinkingServer.applyLens(args);
