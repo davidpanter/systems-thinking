@@ -1,0 +1,38 @@
+id: failure-modes
+name: Failure Modes
+category: architecture
+tags: [resilience, cascading, fault-tolerance, risk]
+description: >
+  Systematically identify how components can fail and what cascades follow.
+  Every component fails eventually — the question is whether failures are
+  isolated or catastrophic.
+
+guiding_questions:
+  - What are the single points of failure in this system?
+  - When component X fails, what happens to components that depend on it?
+  - Are failures detected quickly? How?
+  - What is the blast radius of each failure mode?
+  - Are there graceful degradation paths, or is it all-or-nothing?
+  - What failure modes are we not testing for?
+
+required_fields:
+  failure_catalog:
+    description: List of failure modes with trigger, impact, and likelihood
+    hint: "Include infrastructure, software, data, and human failures"
+  cascade_paths:
+    description: How failures propagate through the system
+    hint: "A fails → B times out → C queues overflow → user sees error"
+  detection_gaps:
+    description: Failures that would go undetected or be detected too late
+    hint: "Silent corruption is worse than noisy failure"
+  mitigation_strategies:
+    description: How to prevent, detect, or recover from each failure mode
+    hint: "Redundancy, circuit breakers, timeouts, fallbacks"
+
+related_models:
+  - id: modularity
+    reason: "Module boundaries are failure isolation boundaries"
+  - id: buffers
+    reason: "Buffers absorb transient failures and prevent cascades"
+  - id: feedback-loops
+    reason: "Failure cascades are runaway positive feedback loops"

@@ -1,0 +1,38 @@
+id: modularity
+name: Modularity
+category: architecture
+tags: [boundaries, decomposition, interfaces, planning]
+description: >
+  Evaluate how well a system decomposes into independent, interchangeable units.
+  Good modularity means units can be understood, developed, tested, and replaced
+  independently.
+
+guiding_questions:
+  - What are the major units/modules in this system?
+  - Can each unit be understood without reading the internals of others?
+  - Can you change one unit's internals without breaking consumers?
+  - Are the interfaces between units well-defined and minimal?
+  - Which modules are too large or doing too many things?
+  - Are there hidden dependencies between modules that bypass the interfaces?
+
+required_fields:
+  modules_identified:
+    description: List of major modules/units in the system
+    hint: "Name each module and state its single responsibility"
+  interface_quality:
+    description: Assessment of interfaces between modules
+    hint: "Are they minimal, well-defined, and stable?"
+  independence_assessment:
+    description: How independently can each module be changed, tested, and deployed?
+    hint: "Which modules are tangled? Which are truly independent?"
+  improvement_opportunities:
+    description: Where modularity could be improved
+    hint: "Which boundaries should be drawn differently?"
+
+related_models:
+  - id: coupling-cohesion
+    reason: "Coupling/cohesion provides quantitative measures for module quality"
+  - id: failure-modes
+    reason: "Module boundaries affect failure isolation"
+  - id: conways-law
+    reason: "Team structure often dictates module boundaries"

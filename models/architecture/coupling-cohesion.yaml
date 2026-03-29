@@ -1,0 +1,35 @@
+id: coupling-cohesion
+name: Coupling & Cohesion
+category: architecture
+tags: [dependencies, isolation, refactoring, planning]
+description: >
+  Measure interdependence between modules (coupling) and focus within them
+  (cohesion). Low coupling + high cohesion = maintainable systems.
+
+guiding_questions:
+  - Which modules depend on each other? How tightly?
+  - If you change module A, which other modules break?
+  - Does each module do one thing well, or is it a grab bag?
+  - Are there circular dependencies?
+  - Which coupling is through stable interfaces vs. shared internals?
+  - What type of coupling exists — data, stamp, control, content?
+
+required_fields:
+  coupling_map:
+    description: Key dependencies between modules and their type/strength
+    hint: "Identify the tightest couplings — these are the riskiest"
+  cohesion_assessment:
+    description: For each module, how focused is its responsibility?
+    hint: "High cohesion = everything in the module relates to one purpose"
+  problematic_dependencies:
+    description: Dependencies that cause the most pain or risk
+    hint: "Circular deps, shared mutable state, content coupling"
+  decoupling_strategies:
+    description: How to reduce coupling where it matters
+    hint: "Interfaces, events, dependency inversion — what fits here?"
+
+related_models:
+  - id: modularity
+    reason: "Modularity provides the structural context for coupling analysis"
+  - id: leverage-points
+    reason: "Decoupling a key dependency can be a high-leverage intervention"

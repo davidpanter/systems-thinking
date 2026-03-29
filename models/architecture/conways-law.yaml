@@ -1,0 +1,36 @@
+id: conways-law
+name: Conway's Law
+category: architecture
+tags: [organization, communication, team-structure, planning]
+description: >
+  Organizations design systems that mirror their communication structures.
+  Examine how team boundaries, reporting lines, and communication patterns
+  shape (and constrain) the system architecture.
+
+guiding_questions:
+  - Which teams own which components?
+  - Where do team boundaries align with system boundaries? Where do they diverge?
+  - Which cross-team interfaces are the most painful?
+  - Are there components that require coordination across many teams to change?
+  - Would restructuring teams improve the architecture (or vice versa)?
+  - Are there communication bottlenecks that create architectural bottlenecks?
+
+required_fields:
+  team_component_map:
+    description: Mapping of teams to the components they own
+    hint: "Where multiple teams touch the same component, friction lives"
+  alignment_assessment:
+    description: Where do org boundaries match system boundaries? Where not?
+    hint: "Misalignment predicts integration pain"
+  communication_bottlenecks:
+    description: Cross-team coordination points that slow things down
+    hint: "Shared services, APIs requiring cross-team changes"
+  structural_recommendations:
+    description: Team or architecture changes that would improve alignment
+    hint: "Sometimes moving code is easier than moving people, and vice versa"
+
+related_models:
+  - id: modularity
+    reason: "Module boundaries should ideally align with team boundaries"
+  - id: constraints
+    reason: "Organizational constraints often bind tighter than technical ones"
