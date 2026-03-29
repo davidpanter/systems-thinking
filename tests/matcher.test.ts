@@ -78,7 +78,7 @@ describe("findCrossReferences", () => {
       modelId: "bottom-up",
       analysis: "Checked infrastructure",
       findings: {
-        assumptions_challenged: "Redis memory at 95% capacity, possible eviction pressure",
+        assumptions_challenged: "Redis cache memory at 95% capacity, possible cache invalidation pressure",
       },
       appliedAt: Date.now(),
     },
