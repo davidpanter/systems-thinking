@@ -2,18 +2,20 @@ id: system-design
 name: System Design
 description: >
   Multi-track analysis for designing or evaluating system architecture.
-  Covers structural quality, operational behavior, and security posture.
+  Each track composes lenses that build on each other, ending with a
+  counterbalance that challenges the track's direction. Covers structure,
+  operations, dynamics, and resilience.
 
 tracks:
   architecture:
-    lenses: [modularity, coupling-cohesion, separation-of-concerns]
-    focus: "Is the structure clean? Are boundaries well-drawn? Are modules independent?"
+    lenses: [modularity, coupling-cohesion, separation-of-concerns, kiss]
+    focus: "Map the modules, measure coupling, verify separation, THEN challenge: is this decomposition worth the complexity, or would something simpler work?"
   operations:
-    lenses: [constraints, queuing-theory, buffers]
-    focus: "Where are the bottlenecks? Will queues stay stable? Are buffers sized correctly?"
+    lenses: [constraints, queuing-theory, buffers, margin-of-safety]
+    focus: "Find the bottleneck, model the queues, size the buffers, THEN: are we over-provisioning — is our margin justified by real uncertainty?"
   dynamics:
-    lenses: [feedback-loops, stock-and-flow]
-    focus: "What feedback loops drive behavior? Where do things accumulate without draining?"
+    lenses: [feedback-loops, stock-and-flow, second-order-thinking]
+    focus: "Map the feedback loops, trace stocks and flows, THEN: what second-order effects will surprise us when this goes live?"
   resilience:
-    lenses: [failure-modes, blast-radius, idempotency]
-    focus: "How does it fail? How far does failure spread? Are operations safe to retry?"
+    lenses: [failure-modes, blast-radius, idempotency, reversibility]
+    focus: "How does it fail? How far does failure spread? Are retries safe? THEN: can we undo things when they go wrong?"

@@ -2,16 +2,18 @@ id: code-review
 name: Code Review
 description: >
   Multi-track review of code changes covering security posture,
-  architectural quality, and failure reasoning. Run tracks in parallel
-  for breadth, then synthesize across tracks for cross-cutting concerns.
+  architectural quality, and failure reasoning. Each track composes
+  2-3 lenses that build on each other, ending with a counterbalance
+  that challenges the track's conclusions. Run tracks in parallel,
+  then synthesize across tracks for cross-cutting concerns.
 
 tracks:
   security:
-    lenses: [attack-surface, trust-boundaries, least-privilege]
-    focus: "What can be exploited? Where are the trust boundaries? Who has more access than they need?"
+    lenses: [attack-surface, trust-boundaries, least-privilege, kiss]
+    focus: "What's exposed? Where are the boundaries? Who has too much access? THEN: are we over-securing at the cost of simplicity?"
   architecture:
-    lenses: [kiss, separation-of-concerns, blast-radius]
-    focus: "Is it as simple as it could be? Are concerns cleanly separated? What's the blast radius if this breaks?"
+    lenses: [separation-of-concerns, modularity, coupling-cohesion, kiss]
+    focus: "Are concerns separated? Are modules independent? What's tightly coupled? THEN: is this decomposition earning its complexity?"
   reasoning:
-    lenses: [inversion, second-order-thinking]
-    focus: "How could this change fail? What are the second-order consequences we're not seeing?"
+    lenses: [inversion, second-order-thinking, occams-razor]
+    focus: "How could this fail? What are the downstream consequences? THEN: are we overthinking this — is the simplest explanation enough?"

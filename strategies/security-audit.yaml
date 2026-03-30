@@ -1,16 +1,17 @@
 id: security-audit
 name: Security Audit
 description: >
-  Comprehensive security review covering all five security models
-  plus architectural and reasoning perspectives on security posture.
+  Comprehensive security review with composing lenses that build on
+  each other's findings, each track ending with a counterbalance.
+  Covers core security posture, access control, and adversarial reasoning.
 
 tracks:
   security-core:
-    lenses: [cia-triad, attack-surface, trust-boundaries]
-    focus: "What needs protecting? What's exposed? Where does trusted meet untrusted?"
+    lenses: [cia-triad, attack-surface, trust-boundaries, kiss]
+    focus: "What needs protecting? What's exposed? Where does trusted meet untrusted? THEN: are we adding security surface that adds more complexity than protection?"
   access-control:
-    lenses: [least-privilege, defense-in-depth]
-    focus: "Who has more access than they need? Are there enough independent security layers?"
-  reasoning:
-    lenses: [inversion, blast-radius]
-    focus: "How would an attacker approach this? If a layer is breached, how far does it go?"
+    lenses: [least-privilege, defense-in-depth, blast-radius, kiss]
+    focus: "Who has too much access? Are layers independent? How far does a breach spread? THEN: is the access control overhead proportionate to the risk?"
+  adversarial:
+    lenses: [inversion, second-order-thinking, circle-of-competence]
+    focus: "Think like an attacker — how would you breach this? What's the cascade after initial compromise? THEN: are we outside our security expertise and need specialist review?"
