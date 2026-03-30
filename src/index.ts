@@ -56,9 +56,11 @@ mcpServer.registerTool("start_analysis", {
   title: "Start Analysis",
   description: `Begin a systems thinking analysis session. Frames the problem and suggests relevant analytical lenses.
 
-Call this first to establish the problem context. Returns a sessionId and suggested lenses (with their guiding questions and required fields) based on keyword matching against your problem description.
+BEFORE calling this, consider whether a predefined strategy fits your use case. Call get_strategy (with no arguments) to see available strategies like code-review, incident-investigation, system-design, security-audit, and capacity-planning. Strategies define parallel analysis tracks that are more focused than ad-hoc lens selection.
 
-THE EXPECTED WORKFLOW IS: start_analysis → apply_lens (2-4 times with different models) → synthesize. A single lens gives you one perspective. The value of this tool is in COMPOSING multiple perspectives — each lens reveals things the others miss, and the cross-references between them surface non-obvious connections. Apply at least 2-3 lenses before synthesizing. The suggestedNextLenses in each apply_lens response will guide you to complementary perspectives.`,
+If no strategy fits, use this tool to start a custom session. Returns a sessionId, suggested lenses, and a recommended sequence of 3 models.
+
+THE EXPECTED WORKFLOW IS: start_analysis → apply_lens (2-4 times with different models) → synthesize. A single lens gives you one perspective. The value is in COMPOSING multiple perspectives. Apply at least 2-3 lenses before synthesizing.`,
   inputSchema: StartAnalysisInput,
 }, async (args) => {
   const result = thinkingServer.startAnalysis(args);
