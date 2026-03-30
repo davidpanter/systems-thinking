@@ -1,0 +1,46 @@
+id: whats-changed
+name: What's Changed
+category: troubleshooting
+tags: [change, correlation, timeline, diagnostic, git, deploys]
+description: >
+  Most incidents are caused by something that changed. If you know when
+  the problem appeared, work backwards through what changed around that
+  time — deploys, config changes, dependency updates, data migrations,
+  traffic patterns, infrastructure changes. Narrow the timeline, then
+  narrow the change.
+
+guiding_questions:
+  - When did the problem first appear? Can we pinpoint a time window?
+  - What changed in that window? Deploys, config, dependencies, data, infrastructure?
+  - What does git log show around that time? Any suspicious commits?
+  - Can git bisect isolate the exact commit that introduced the issue?
+  - Were there infrastructure changes — scaling events, certificate renewals, DNS updates?
+  - Did traffic patterns change — new clients, traffic spike, different request mix?
+  - Were there dependency updates — package upgrades, API version changes, upstream deploys?
+  - What do the logs show at the transition point between working and broken?
+
+required_fields:
+  timeline:
+    description: When the problem started and how precisely we can bound it
+    hint: "Alerts fired at 14:32, last known-good at 14:15, so the window is 14:15-14:32"
+  changes_in_window:
+    description: Everything that changed in or near the problem window
+    hint: "git log, deploy history, config management logs, cloud audit trail, CI/CD pipeline, cron schedules"
+  correlation_analysis:
+    description: Which changes correlate with the symptoms?
+    hint: "Deploy at 14:20 touched the auth module, symptoms are auth timeouts — strong correlation"
+  elimination:
+    description: Changes ruled out and changes still under suspicion
+    hint: "Reverted deploy X, problem persists — not the cause. Config change Y happened exactly at symptom onset — prime suspect."
+
+related_models:
+  - id: binary-search
+    reason: "git bisect is literally binary search applied to change history"
+  - id: occams-razor
+    reason: "The most recent change that correlates with symptoms is usually the cause"
+  - id: bottom-up
+    reason: "Infrastructure changes (OS updates, cert renewals, scaling) are easy to overlook"
+
+counterbalances:
+  - id: second-order-thinking
+    tension: "The correlating change may be a trigger, not the root cause — what made the system fragile enough that this change broke it?"
