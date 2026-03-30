@@ -1,0 +1,16 @@
+id: capacity-planning
+name: Capacity Planning
+description: >
+  Analyze whether a system can handle current and projected load.
+  Covers operational limits, dynamic behavior over time, and safety margins.
+
+tracks:
+  operations:
+    lenses: [constraints, queuing-theory, buffers]
+    focus: "What's the binding constraint? Are queues stable at peak load? Are buffers sized for spikes?"
+  dynamics:
+    lenses: [stock-and-flow, system-dynamics]
+    focus: "Where do things accumulate? How does behavior change over time? What trends are unsustainable?"
+  reasoning:
+    lenses: [margin-of-safety, inversion]
+    focus: "How much headroom exists? What happens if our estimates are wrong by 2x?"

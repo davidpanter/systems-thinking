@@ -8,7 +8,8 @@
   },
   "files": [
     "dist",
-    "models"
+    "models",
+    "strategies"
   ],
   "scripts": {
     "build": "tsc && shx chmod +x dist/*.js",

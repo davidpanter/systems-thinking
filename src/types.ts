@@ -66,6 +66,20 @@ export interface CrossReference {
   relevance: string;
 }
 
+// --- Strategy Definition (loaded from YAML) ---
+
+export interface StrategyTrack {
+  lenses: string[];
+  focus: string;
+}
+
+export interface StrategyDefinition {
+  id: string;
+  name: string;
+  description: string;
+  tracks: Record<string, StrategyTrack>;
+}
+
 // --- Zod Schemas for tool inputs ---
 
 export const StartAnalysisInput = z.object({
@@ -82,6 +96,10 @@ export const ApplyLensInput = z.object({
   observations: z.string().optional().describe("Emergent insights outside the model template"),
   confidence: z.enum(["low", "medium", "high"]).optional().describe("Confidence in this analysis"),
   nextLens: z.string().optional().describe("Which lens you want to apply next"),
+});
+
+export const GetStrategyInput = z.object({
+  strategyId: z.string().optional().describe("Strategy ID to retrieve (e.g. 'code-review'). Omit to list all available strategies."),
 });
 
 export const SynthesizeInput = z.object({

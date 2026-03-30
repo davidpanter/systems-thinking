@@ -1,0 +1,17 @@
+id: code-review
+name: Code Review
+description: >
+  Multi-track review of code changes covering security posture,
+  architectural quality, and failure reasoning. Run tracks in parallel
+  for breadth, then synthesize across tracks for cross-cutting concerns.
+
+tracks:
+  security:
+    lenses: [attack-surface, trust-boundaries, least-privilege]
+    focus: "What can be exploited? Where are the trust boundaries? Who has more access than they need?"
+  architecture:
+    lenses: [kiss, separation-of-concerns, blast-radius]
+    focus: "Is it as simple as it could be? Are concerns cleanly separated? What's the blast radius if this breaks?"
+  reasoning:
+    lenses: [inversion, second-order-thinking]
+    focus: "How could this change fail? What are the second-order consequences we're not seeing?"

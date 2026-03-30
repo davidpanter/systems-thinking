@@ -6,9 +6,10 @@ import { fileURLToPath } from "url";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import chalk from "chalk";
-import { loadModels } from "./loader.js";
+import { loadModels, loadStrategies } from "./loader.js";
 import { SystemsThinkingServer } from "./server.js";
-import { StartAnalysisInput, ApplyLensInput, SynthesizeInput } from "./types.js";
+import { StartAnalysisInput, ApplyLensInput, SynthesizeInput, GetStrategyInput } from "./types.js";
+import type { StrategyDefinition } from "./types.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -23,14 +24,22 @@ const builtinModelsDir = path.join(__dirname, "..", "models");
 const customModelsDir = argv.modelsDir as string | undefined;
 
 const models = await loadModels(builtinModelsDir, customModelsDir);
+
+const builtinStrategiesDir = path.join(__dirname, "..", "strategies");
+const strategies = await loadStrategies(builtinStrategiesDir, customModelsDir);
+const strategyMap = new Map<string, StrategyDefinition>(strategies.map((s) => [s.id, s]));
+
 const disableLogging = process.env.DISABLE_THOUGHT_LOGGING === "true";
 
 if (!disableLogging) {
   console.error(
-    chalk.blue(`Systems Thinking MCP Server loaded ${models.length} models`)
+    chalk.blue(`Systems Thinking MCP Server loaded ${models.length} models, ${strategies.length} strategies`)
   );
   for (const m of models) {
     console.error(chalk.gray(`  [${m.category}] ${m.name} (${m.id})`));
+  }
+  for (const s of strategies) {
+    console.error(chalk.gray(`  {strategy} ${s.name} (${s.id}) — ${Object.keys(s.tracks).length} tracks`));
   }
 }
 
@@ -162,6 +171,74 @@ The session stays open after synthesis. If the synthesis reveals gaps, apply mor
 
   return {
     content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }],
+  };
+});
+
+// --- Tool: get_strategy ---
+
+mcpServer.registerTool("get_strategy", {
+  title: "Get Strategy",
+  description: `Get a predefined multi-track analysis strategy. Strategies define parallel analysis tracks, each with 2-3 focused lenses.
+
+Available strategies: ${strategies.map((s) => `${s.id} (${s.name})`).join(", ")}
+
+Call without strategyId to list all strategies. Call with a strategyId to get the full playbook.
+
+USAGE: Get a strategy, then run each track as a separate analysis session (or in parallel with subagents). Each track calls start_analysis → apply_lens (for each lens in the track) → synthesize. After all tracks complete, do a final cross-track synthesis combining findings from all tracks.
+
+This is the recommended approach for broad analysis (code review, system design, security audit) where multiple independent perspectives are more valuable than a single sequential chain.`,
+  inputSchema: GetStrategyInput,
+}, async (args) => {
+  if (!args.strategyId) {
+    // List all strategies
+    const list = strategies.map((s) => ({
+      id: s.id,
+      name: s.name,
+      description: s.description,
+      trackCount: Object.keys(s.tracks).length,
+      tracks: Object.entries(s.tracks).map(([name, track]) => ({
+        name,
+        lensCount: track.lenses.length,
+        focus: track.focus,
+      })),
+    }));
+    return {
+      content: [{ type: "text" as const, text: JSON.stringify({ strategies: list }, null, 2) }],
+    };
+  }
+
+  const strategy = strategyMap.get(args.strategyId);
+  if (!strategy) {
+    return {
+      content: [{ type: "text" as const, text: JSON.stringify({
+        error: `Strategy not found: ${args.strategyId}`,
+        availableStrategies: strategies.map((s) => s.id),
+      }, null, 2) }],
+    };
+  }
+
+  // Enrich tracks with full model info
+  const enrichedTracks = Object.entries(strategy.tracks).map(([trackName, track]) => ({
+    trackName,
+    focus: track.focus,
+    lenses: track.lenses.map((id) => {
+      const model = thinkingServer.getModel(id);
+      return model
+        ? { modelId: model.id, name: model.name, guidingQuestions: model.guiding_questions, requiredFields: model.required_fields }
+        : { modelId: id, name: id, error: "Model not found" };
+    }),
+  }));
+
+  return {
+    content: [{ type: "text" as const, text: JSON.stringify({
+      strategy: {
+        id: strategy.id,
+        name: strategy.name,
+        description: strategy.description,
+      },
+      tracks: enrichedTracks,
+      workflow: `Run each track as a separate analysis session (or in parallel). For each track: start_analysis → apply_lens for each lens → synthesize. Then do a final synthesis combining all track findings.`,
+    }, null, 2) }],
   };
 });
 

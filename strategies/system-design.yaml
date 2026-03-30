@@ -1,0 +1,19 @@
+id: system-design
+name: System Design
+description: >
+  Multi-track analysis for designing or evaluating system architecture.
+  Covers structural quality, operational behavior, and security posture.
+
+tracks:
+  architecture:
+    lenses: [modularity, coupling-cohesion, separation-of-concerns]
+    focus: "Is the structure clean? Are boundaries well-drawn? Are modules independent?"
+  operations:
+    lenses: [constraints, queuing-theory, buffers]
+    focus: "Where are the bottlenecks? Will queues stay stable? Are buffers sized correctly?"
+  dynamics:
+    lenses: [feedback-loops, stock-and-flow]
+    focus: "What feedback loops drive behavior? Where do things accumulate without draining?"
+  resilience:
+    lenses: [failure-modes, blast-radius, idempotency]
+    focus: "How does it fail? How far does failure spread? Are operations safe to retry?"

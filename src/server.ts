@@ -19,6 +19,10 @@ export class SystemsThinkingServer {
     this.modelMap = new Map(models.map((m) => [m.id, m]));
   }
 
+  getModel(id: string): ModelDefinition | undefined {
+    return this.modelMap.get(id);
+  }
+
   startAnalysis(input: {
     problem: string;
     context?: string;

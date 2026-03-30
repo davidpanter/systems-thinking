@@ -1,0 +1,20 @@
+id: incident-investigation
+name: Incident Investigation
+description: >
+  Parallel diagnostic tracks for investigating production incidents.
+  The diagnostic track isolates the fault, the infrastructure track
+  checks foundations, and the reasoning track challenges assumptions.
+
+tracks:
+  diagnostic:
+    lenses: [top-down, binary-search]
+    focus: "Trace from upstream, bisect the pipeline to isolate the fault location."
+  infrastructure:
+    lenses: [bottom-up, caches]
+    focus: "Are the foundations healthy? Is something stale, exhausted, or misconfigured?"
+  concurrency:
+    lenses: [parallelism, queuing-theory]
+    focus: "Is this a concurrency issue? Are queues backing up or locks contending?"
+  reasoning:
+    lenses: [occams-razor, hanlons-razor]
+    focus: "What's the simplest explanation? What recent change could have caused this by mistake?"
