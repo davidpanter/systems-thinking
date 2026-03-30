@@ -9,8 +9,8 @@ description: >
 
 tracks:
   diagnostic:
-    lenses: [whats-changed, top-down, binary-search, occams-razor]
-    focus: "Start with what changed, trace from upstream, bisect to isolate, THEN challenge: are we overcomplicating this — is the simplest explanation the right one?"
+    lenses: [bottom-up, top-down, whats-changed, binary-search, occams-razor]
+    focus: "Check foundations first, trace from upstream, identify what changed, bisect to isolate, THEN challenge: are we overcomplicating this — is the simplest explanation the right one? Best for infrastructure or infrastructure+code issues."
   infrastructure:
     lenses: [bottom-up, caches, map-vs-territory]
     focus: "Check foundations, audit cache layers, THEN challenge: does our monitoring actually reflect reality, or are we trusting a stale map?"
