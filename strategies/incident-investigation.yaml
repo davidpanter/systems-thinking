@@ -9,8 +9,8 @@ description: >
 
 tracks:
   diagnostic:
-    lenses: [top-down, binary-search, bottom-up]
-    focus: "Trace from upstream, bisect to isolate the fault, THEN verify foundations at the fault location — did top-down miss something underneath?"
+    lenses: [whats-changed, top-down, binary-search, occams-razor]
+    focus: "Start with what changed, trace from upstream, bisect to isolate, THEN challenge: are we overcomplicating this — is the simplest explanation the right one?"
   infrastructure:
     lenses: [bottom-up, caches, map-vs-territory]
     focus: "Check foundations, audit cache layers, THEN challenge: does our monitoring actually reflect reality, or are we trusting a stale map?"
