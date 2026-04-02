@@ -64,6 +64,7 @@ export interface CrossReference {
   findingKey: string;
   findingExcerpt: string;
   relevance: string;
+  score: number;
 }
 
 // --- Strategy Definition (loaded from YAML) ---

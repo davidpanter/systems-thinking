@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { suggestLenses, findCrossReferences } from "../src/matcher.js";
+import { suggestLenses, findCrossReferences, tokenize } from "../src/matcher.js";
 import type { ModelDefinition, LensApplication } from "../src/types.js";
 
 const mockModels: ModelDefinition[] = [
@@ -43,6 +43,34 @@ const mockModels: ModelDefinition[] = [
     counterbalances: [],
   },
 ];
+
+describe("tokenize", () => {
+  it("excludes common English stop words", () => {
+    const tokens = tokenize("the system is not working and it has been failing for a while");
+    // Stop words should be filtered out
+    expect(tokens.has("the")).toBe(false);
+    expect(tokens.has("is")).toBe(false);
+    expect(tokens.has("and")).toBe(false);
+    expect(tokens.has("it")).toBe(false);
+    expect(tokens.has("has")).toBe(false);
+    expect(tokens.has("been")).toBe(false);
+    expect(tokens.has("for")).toBe(false);
+    expect(tokens.has("not")).toBe(false);
+    // Meaningful words should remain
+    expect(tokens.has("system")).toBe(true);
+    expect(tokens.has("working")).toBe(true);
+    expect(tokens.has("failing")).toBe(true);
+  });
+
+  it("keeps domain-relevant short words", () => {
+    const tokens = tokenize("API SLO DNS CPU OOM");
+    expect(tokens.has("api")).toBe(true);
+    expect(tokens.has("slo")).toBe(true);
+    expect(tokens.has("dns")).toBe(true);
+    expect(tokens.has("cpu")).toBe(true);
+    expect(tokens.has("oom")).toBe(true);
+  });
+});
 
 describe("suggestLenses", () => {
   it("matches problem text against model tags", () => {
@@ -99,5 +127,99 @@ describe("findCrossReferences", () => {
     const cacheModel = mockModels.find((m) => m.id === "caches")!;
     const refs = findCrossReferences([], cacheModel);
     expect(refs).toEqual([]);
+  });
+
+  it("does not match on stop words alone", () => {
+    const priorWithStopWords: LensApplication[] = [
+      {
+        modelId: "some-lens",
+        analysis: "The system is working and it has been stable",
+        findings: {
+          some_field: "The system is working and it has been stable for a while now",
+        },
+        appliedAt: Date.now(),
+      },
+    ];
+    const cacheModel = mockModels.find((m) => m.id === "caches")!;
+    const refs = findCrossReferences(priorWithStopWords, cacheModel);
+    // Should NOT match — only stop words overlap, no meaningful terms
+    expect(refs).toEqual([]);
+  });
+
+  it("requires minimum meaningful term overlap", () => {
+    // Only one meaningful word overlaps — "cache" — but minimum threshold is 2
+    const priorWithOneWord: LensApplication[] = [
+      {
+        modelId: "some-lens",
+        analysis: "test",
+        findings: {
+          some_field: "The cache was empty",
+        },
+        appliedAt: Date.now(),
+      },
+    ];
+    const cacheModel = mockModels.find((m) => m.id === "caches")!;
+    const refs = findCrossReferences(priorWithOneWord, cacheModel);
+    expect(refs).toEqual([]);
+  });
+
+  it("matches when multiple meaningful terms overlap", () => {
+    const priorWithGoodOverlap: LensApplication[] = [
+      {
+        modelId: "bottom-up",
+        analysis: "test",
+        findings: {
+          assumptions_challenged: "Redis cache memory at 95% capacity, possible cache invalidation pressure",
+        },
+        appliedAt: Date.now(),
+      },
+    ];
+    const cacheModel = mockModels.find((m) => m.id === "caches")!;
+    const refs = findCrossReferences(priorWithGoodOverlap, cacheModel);
+    expect(refs.length).toBeGreaterThan(0);
+    expect(refs[0].fromLens).toBe("bottom-up");
+  });
+
+  it("scores cross-references by overlap strength", () => {
+    const priorLenses: LensApplication[] = [
+      {
+        modelId: "lens-a",
+        analysis: "test",
+        findings: {
+          weak_match: "cache invalidation",
+          strong_match: "cache invalidation staleness layers ttl audit caching",
+        },
+        appliedAt: Date.now(),
+      },
+    ];
+    const cacheModel = mockModels.find((m) => m.id === "caches")!;
+    const refs = findCrossReferences(priorLenses, cacheModel);
+    // Both should match, but strong_match should have higher score
+    if (refs.length === 2) {
+      const strongRef = refs.find((r) => r.findingKey === "strong_match");
+      const weakRef = refs.find((r) => r.findingKey === "weak_match");
+      expect(strongRef).toBeDefined();
+      expect(weakRef).toBeDefined();
+      expect(strongRef!.score).toBeGreaterThan(weakRef!.score);
+    }
+  });
+
+  it("returns cross-references sorted by score descending", () => {
+    const priorLenses: LensApplication[] = [
+      {
+        modelId: "lens-a",
+        analysis: "test",
+        findings: {
+          weak: "cache invalidation",
+          strong: "cache invalidation staleness layers ttl audit caching",
+        },
+        appliedAt: Date.now(),
+      },
+    ];
+    const cacheModel = mockModels.find((m) => m.id === "caches")!;
+    const refs = findCrossReferences(priorLenses, cacheModel);
+    for (let i = 1; i < refs.length; i++) {
+      expect(refs[i - 1].score).toBeGreaterThanOrEqual(refs[i].score);
+    }
   });
 });

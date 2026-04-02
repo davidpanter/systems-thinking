@@ -10,15 +10,30 @@ export interface CounterbalanceSuggestion extends LensSuggestion {
   tension: string;
 }
 
+const STOP_WORDS = new Set([
+  "the", "be", "to", "of", "and", "in", "that", "have", "it", "for",
+  "not", "on", "with", "he", "as", "you", "do", "at", "this", "but",
+  "his", "by", "from", "they", "we", "her", "she", "or", "an", "will",
+  "my", "one", "all", "would", "there", "their", "what", "so", "up",
+  "out", "if", "about", "who", "get", "which", "go", "me", "when",
+  "make", "can", "like", "no", "just", "him", "know", "take",
+  "into", "your", "some", "could", "them", "than", "other", "how",
+  "then", "its", "our", "these", "also", "after", "use", "two",
+  "more", "very", "much", "before", "any", "where", "most", "been",
+  "has", "was", "are", "is", "does", "did", "had", "may", "each",
+  "should", "over", "such", "through", "own",
+]);
+
 /**
- * Tokenize text into lowercase words for matching.
+ * Tokenize text into lowercase words for matching,
+ * filtering out common English stop words.
  */
-function tokenize(text: string): Set<string> {
+export function tokenize(text: string): Set<string> {
   return new Set(
     text
       .toLowerCase()
       .split(/[^a-z0-9]+/)
-      .filter((w) => w.length > 1)
+      .filter((w) => w.length > 1 && !STOP_WORDS.has(w))
   );
 }
 
@@ -69,10 +84,17 @@ export function suggestLenses(
   }));
 }
 
+const MIN_CROSS_REF_OVERLAP = 2;
+
 /**
  * Find cross-references between prior lens findings and the current model.
- * Scans prior findings values for words that appear in the current model's
- * required_fields descriptions and guiding_questions.
+ * Scans prior findings values for meaningful (non-stop-word) terms that
+ * appear in the current model's tags, description, guiding questions,
+ * and required field descriptions/hints.
+ *
+ * Requires at least MIN_CROSS_REF_OVERLAP meaningful shared terms to
+ * qualify as a cross-reference. Results are scored by overlap count
+ * and sorted by score descending.
  */
 export function findCrossReferences(
   priorLenses: LensApplication[],
@@ -99,16 +121,19 @@ export function findCrossReferences(
       for (const t of findingTokens) {
         if (modelTokens.has(t)) overlap.push(t);
       }
-      if (overlap.length > 0) {
+      if (overlap.length >= MIN_CROSS_REF_OVERLAP) {
         refs.push({
           fromLens: lens.modelId,
           findingKey: key,
           findingExcerpt: value.length > 200 ? value.slice(0, 200) + "..." : value,
           relevance: `Shared terms: ${overlap.slice(0, 5).join(", ")}`,
+          score: overlap.length,
         });
       }
     }
   }
+
+  refs.sort((a, b) => b.score - a.score);
 
   return refs;
 }
