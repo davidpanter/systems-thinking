@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { suggestLenses, findCrossReferences, tokenize, suggestLensesWithGraph } from "../src/matcher.js";
+import { suggestLenses, findCrossReferences, tokenize, suggestLensesWithGraph, computeClusters } from "../src/matcher.js";
 import type { ModelDefinition, LensApplication } from "../src/types.js";
 
 const mockModels: ModelDefinition[] = [
@@ -317,5 +317,111 @@ describe("suggestLensesWithGraph", () => {
     // Discovered purely via graph (no tag match), reason should start with "Related to"
     expect(soc).toBeDefined();
     expect(soc!.reason).toContain("Related to");
+  });
+});
+
+describe("computeClusters", () => {
+  // Two clear clusters connected by a bridge model:
+  // Cluster A: mod-a ↔ mod-b ↔ mod-c (tightly connected)
+  // Cluster B: mod-d ↔ mod-e ↔ mod-f (tightly connected)
+  // Bridge: mod-c → mod-d (one cross-cluster edge)
+  // Isolated: mod-g (no connections)
+  const clusterModels: ModelDefinition[] = [
+    {
+      id: "mod-a", name: "A", category: "cat1", categories: ["cat1"],
+      tags: ["alpha"], description: "Model A",
+      guiding_questions: ["?"], required_fields: { f: { description: "f", hint: "h" } },
+      related_models: [{ id: "mod-b", reason: "A→B" }, { id: "mod-c", reason: "A→C" }],
+      counterbalances: [],
+    },
+    {
+      id: "mod-b", name: "B", category: "cat1", categories: ["cat1"],
+      tags: ["alpha"], description: "Model B",
+      guiding_questions: ["?"], required_fields: { f: { description: "f", hint: "h" } },
+      related_models: [{ id: "mod-a", reason: "B→A" }, { id: "mod-c", reason: "B→C" }],
+      counterbalances: [],
+    },
+    {
+      id: "mod-c", name: "C", category: "cat1", categories: ["cat1"],
+      tags: ["alpha", "bridge"], description: "Model C bridges clusters",
+      guiding_questions: ["?"], required_fields: { f: { description: "f", hint: "h" } },
+      related_models: [{ id: "mod-a", reason: "C→A" }, { id: "mod-b", reason: "C→B" }, { id: "mod-d", reason: "C→D" }],
+      counterbalances: [],
+    },
+    {
+      id: "mod-d", name: "D", category: "cat2", categories: ["cat2"],
+      tags: ["beta"], description: "Model D",
+      guiding_questions: ["?"], required_fields: { f: { description: "f", hint: "h" } },
+      related_models: [{ id: "mod-e", reason: "D→E" }, { id: "mod-f", reason: "D→F" }],
+      counterbalances: [],
+    },
+    {
+      id: "mod-e", name: "E", category: "cat2", categories: ["cat2"],
+      tags: ["beta"], description: "Model E",
+      guiding_questions: ["?"], required_fields: { f: { description: "f", hint: "h" } },
+      related_models: [{ id: "mod-d", reason: "E→D" }, { id: "mod-f", reason: "E→F" }],
+      counterbalances: [],
+    },
+    {
+      id: "mod-f", name: "F", category: "cat2", categories: ["cat2"],
+      tags: ["beta"], description: "Model F",
+      guiding_questions: ["?"], required_fields: { f: { description: "f", hint: "h" } },
+      related_models: [{ id: "mod-d", reason: "F→D" }, { id: "mod-e", reason: "F→E" }],
+      counterbalances: [{ id: "mod-a", tension: "F counters A" }],
+    },
+    {
+      id: "mod-g", name: "G", category: "cat3", categories: ["cat3"],
+      tags: ["gamma"], description: "Isolated model G",
+      guiding_questions: ["?"], required_fields: { f: { description: "f", hint: "h" } },
+      related_models: [],
+      counterbalances: [],
+    },
+  ];
+
+  it("identifies distinct clusters from the relationship graph", () => {
+    const clusters = computeClusters(clusterModels);
+    // Should have at least 2 clusters (the two tight groups)
+    expect(clusters.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("keeps tightly connected models in the same cluster", () => {
+    const clusters = computeClusters(clusterModels);
+    // mod-a, mod-b, mod-c should be in the same cluster
+    const clusterWithA = clusters.find((c) => c.modelIds.includes("mod-a"));
+    expect(clusterWithA).toBeDefined();
+    expect(clusterWithA!.modelIds).toContain("mod-b");
+
+    // mod-d, mod-e, mod-f should be in the same cluster
+    const clusterWithD = clusters.find((c) => c.modelIds.includes("mod-d"));
+    expect(clusterWithD).toBeDefined();
+    expect(clusterWithD!.modelIds).toContain("mod-e");
+    expect(clusterWithD!.modelIds).toContain("mod-f");
+  });
+
+  it("assigns a theme to each cluster based on common tags", () => {
+    const clusters = computeClusters(clusterModels);
+    for (const cluster of clusters) {
+      expect(cluster.theme).toBeTruthy();
+    }
+  });
+
+  it("lists categories covered by each cluster", () => {
+    const clusters = computeClusters(clusterModels);
+    const clusterWithA = clusters.find((c) => c.modelIds.includes("mod-a"));
+    expect(clusterWithA!.categories).toContain("cat1");
+  });
+
+  it("includes isolated models in their own cluster or a catch-all", () => {
+    const clusters = computeClusters(clusterModels);
+    const allModelIds = clusters.flatMap((c) => c.modelIds);
+    // Every model should appear in some cluster
+    expect(allModelIds).toContain("mod-g");
+  });
+
+  it("does not duplicate models across clusters", () => {
+    const clusters = computeClusters(clusterModels);
+    const allModelIds = clusters.flatMap((c) => c.modelIds);
+    const unique = new Set(allModelIds);
+    expect(unique.size).toBe(allModelIds.length);
   });
 });

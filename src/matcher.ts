@@ -10,6 +10,14 @@ export interface CounterbalanceSuggestion extends LensSuggestion {
   tension: string;
 }
 
+export interface ModelCluster {
+  id: string;
+  theme: string;
+  description: string;
+  modelIds: string[];
+  categories: string[];
+}
+
 const STOP_WORDS = new Set([
   "the", "be", "to", "of", "and", "in", "that", "have", "it", "for",
   "not", "on", "with", "he", "as", "you", "do", "at", "this", "but",
@@ -35,6 +43,60 @@ export function tokenize(text: string): Set<string> {
       .split(/[^a-z0-9]+/)
       .filter((w) => w.length > 1 && !STOP_WORDS.has(w))
   );
+}
+
+/**
+ * Compute model clusters from categories, enriched with graph metadata.
+ *
+ * Categories are human-curated boundaries. The relationship graph is used
+ * elsewhere (expand_selection, suggestLensesWithGraph) to navigate between
+ * clusters, not to override the taxonomy.
+ */
+export function computeClusters(models: ModelDefinition[]): ModelCluster[] {
+  const modelMap = new Map(models.map((m) => [m.id, m]));
+
+  // Group by primary category
+  const groups = new Map<string, string[]>();
+  for (const m of models) {
+    if (!groups.has(m.category)) groups.set(m.category, []);
+    groups.get(m.category)!.push(m.id);
+  }
+
+  // Build cluster objects
+  const clusters: ModelCluster[] = [];
+  let clusterIndex = 0;
+  for (const [categoryName, memberIds] of groups) {
+    clusterIndex++;
+    const members = memberIds.map((id) => modelMap.get(id)!);
+
+    // Theme: most common tags across cluster members
+    const tagCounts = new Map<string, number>();
+    for (const m of members) {
+      for (const tag of m.tags) {
+        tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
+      }
+    }
+    const topTags = [...tagCounts.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([tag]) => tag);
+    const theme = topTags.length > 0
+      ? topTags.map((t) => t.charAt(0).toUpperCase() + t.slice(1)).join(", ")
+      : categoryName;
+
+    const description = `${members.length} models: ${members.map((m) => m.name).join(", ")}`;
+
+    clusters.push({
+      id: categoryName,
+      theme,
+      description,
+      modelIds: memberIds.sort(),
+      categories: [categoryName],
+    });
+  }
+
+  clusters.sort((a, b) => b.modelIds.length - a.modelIds.length);
+  return clusters;
 }
 
 /**
