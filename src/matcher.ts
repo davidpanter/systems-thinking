@@ -1,9 +1,6 @@
 import type {
   ModelDefinition,
-  LensApplication,
   LensSuggestion,
-  CrossReference,
-  CounterbalanceModel,
 } from "./types.js";
 
 export interface CounterbalanceSuggestion extends LensSuggestion {
@@ -49,8 +46,8 @@ export function tokenize(text: string): Set<string> {
  * Compute model clusters from categories, enriched with graph metadata.
  *
  * Categories are human-curated boundaries. The relationship graph is used
- * elsewhere (expand_selection, suggestLensesWithGraph) to navigate between
- * clusters, not to override the taxonomy.
+ * elsewhere (expand_selection) to navigate between clusters, not to
+ * override the taxonomy.
  */
 export function computeClusters(models: ModelDefinition[]): ModelCluster[] {
   const modelMap = new Map(models.map((m) => [m.id, m]));
@@ -129,157 +126,6 @@ export function suggestLenses(
     modelId: s.model.id,
     name: s.model.name,
     reason: `Matched on problem keywords (score: ${s.score}) — ${s.model.description.slice(0, 100)}`,
-    guidingQuestions: s.model.guiding_questions,
-    requiredFields: s.model.required_fields,
-  }));
-}
-
-const MIN_CROSS_REF_OVERLAP = 2;
-
-/**
- * Find cross-references between prior lens findings and the current model.
- * Scans prior findings values for meaningful (non-stop-word) terms that
- * appear in the current model's tags, description, guiding questions,
- * and required field descriptions/hints.
- *
- * Requires at least MIN_CROSS_REF_OVERLAP meaningful shared terms to
- * qualify as a cross-reference. Results are scored by overlap count
- * and sorted by score descending.
- */
-export function findCrossReferences(
-  priorLenses: LensApplication[],
-  currentModel: ModelDefinition
-): CrossReference[] {
-  if (priorLenses.length === 0) return [];
-
-  // Build token set from current model's tags, description, field descriptions, and guiding questions
-  const modelText = [
-    ...currentModel.tags,
-    currentModel.description,
-    ...currentModel.guiding_questions,
-    ...Object.values(currentModel.required_fields).map((f) => f.description),
-    ...Object.values(currentModel.required_fields).map((f) => f.hint),
-  ].join(" ");
-  const modelTokens = tokenize(modelText);
-
-  const refs: CrossReference[] = [];
-
-  for (const lens of priorLenses) {
-    for (const [key, value] of Object.entries(lens.findings)) {
-      const findingTokens = tokenize(value);
-      const overlap: string[] = [];
-      for (const t of findingTokens) {
-        if (modelTokens.has(t)) overlap.push(t);
-      }
-      if (overlap.length >= MIN_CROSS_REF_OVERLAP) {
-        refs.push({
-          fromLens: lens.modelId,
-          findingKey: key,
-          findingExcerpt: value.length > 200 ? value.slice(0, 200) + "..." : value,
-          relevance: `Shared terms: ${overlap.slice(0, 5).join(", ")}`,
-          score: overlap.length,
-        });
-      }
-    }
-  }
-
-  refs.sort((a, b) => b.score - a.score);
-
-  return refs;
-}
-
-/**
- * Suggest lenses using tag matching + graph-aware boosting.
- *
- * 1. Score all models via tag/description matching (same as suggestLenses)
- * 2. For top tag-matched models, walk related_models + counterbalances one hop
- * 3. Graph neighbors get added with a relationship-based reason
- * 4. Models that appear both via tags AND as graph neighbors get boosted
- *
- * Returns a deduplicated, scored, sorted list of suggestions.
- */
-export function suggestLensesWithGraph(
-  problemText: string,
-  models: ModelDefinition[],
-  appliedModelIds: string[],
-  maxResults: number = 5
-): LensSuggestion[] {
-  const applied = new Set(appliedModelIds);
-  const tokens = tokenize(problemText);
-  const modelMap = new Map(models.map((m) => [m.id, m]));
-
-  // Step 1: score all models by tag/description match
-  const tagScores = new Map<string, number>();
-  for (const m of models) {
-    if (applied.has(m.id)) continue;
-    const score = scoreModel(tokens, m);
-    if (score > 0) tagScores.set(m.id, score);
-  }
-
-  // Step 2: walk graph from top tag-matched models (top 3)
-  const topTagIds = [...tagScores.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 3)
-    .map(([id]) => id);
-
-  // Track graph neighbors: id → { reason, from }
-  const graphNeighbors = new Map<string, { reason: string; from: string }>();
-  for (const id of topTagIds) {
-    const model = modelMap.get(id);
-    if (!model) continue;
-    for (const rel of model.related_models) {
-      if (!applied.has(rel.id) && modelMap.has(rel.id) && rel.id !== id) {
-        if (!graphNeighbors.has(rel.id)) {
-          graphNeighbors.set(rel.id, { reason: rel.reason, from: id });
-        }
-      }
-    }
-    for (const cb of model.counterbalances) {
-      if (!applied.has(cb.id) && modelMap.has(cb.id) && cb.id !== id) {
-        if (!graphNeighbors.has(cb.id)) {
-          graphNeighbors.set(cb.id, { reason: `Counterbalance: ${cb.tension}`, from: id });
-        }
-      }
-    }
-  }
-
-  // Step 3: build combined scored list
-  const combined = new Map<string, { model: ModelDefinition; score: number; reason: string }>();
-
-  // Add tag-scored models
-  for (const [id, score] of tagScores) {
-    const model = modelMap.get(id)!;
-    const graphBoost = graphNeighbors.has(id) ? 3 : 0;
-    combined.set(id, {
-      model,
-      score: score + graphBoost,
-      reason: graphBoost > 0
-        ? `Matched on keywords (score: ${score}) + related to ${graphNeighbors.get(id)!.from} — ${model.description.slice(0, 80)}`
-        : `Matched on keywords (score: ${score}) — ${model.description.slice(0, 100)}`,
-    });
-  }
-
-  // Add graph-only neighbors (no tag score)
-  for (const [id, info] of graphNeighbors) {
-    if (!combined.has(id)) {
-      const model = modelMap.get(id)!;
-      combined.set(id, {
-        model,
-        score: 2, // Base score for graph-discovered models
-        reason: `Related to ${info.from}: ${info.reason}`,
-      });
-    }
-  }
-
-  // Step 4: sort and return
-  const sorted = [...combined.values()]
-    .sort((a, b) => b.score - a.score)
-    .slice(0, maxResults);
-
-  return sorted.map((s) => ({
-    modelId: s.model.id,
-    name: s.model.name,
-    reason: s.reason,
     guidingQuestions: s.model.guiding_questions,
     requiredFields: s.model.required_fields,
   }));

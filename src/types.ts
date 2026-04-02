@@ -60,14 +60,6 @@ export interface LensSuggestion {
   requiredFields: Record<string, RequiredFieldDef>;
 }
 
-export interface CrossReference {
-  fromLens: string;
-  findingKey: string;
-  findingExcerpt: string;
-  relevance: string;
-  score: number;
-}
-
 // --- Strategy Definition (loaded from YAML) ---
 
 export interface StrategyConcern {
