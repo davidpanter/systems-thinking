@@ -1,0 +1,16 @@
+id: multi-category-model
+name: Multi Category Model
+tags: [testing, multi]
+categories: [operations, troubleshooting, reliability]
+description: A test model that belongs to multiple categories.
+
+guiding_questions:
+  - Does multi-category work?
+
+required_fields:
+  test_field:
+    description: A test field
+    hint: "test"
+
+related_models: []
+counterbalances: []

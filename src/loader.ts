@@ -27,10 +27,17 @@ export async function loadModelsFromDirectory(
       const content = await fs.readFile(filePath, "utf-8");
       const parsed = yaml.load(content) as Record<string, unknown>;
 
+      // Build categories: use YAML field if present, ensuring directory category is included
+      const yamlCategories = (parsed.categories as string[]) || [];
+      const categories = yamlCategories.length > 0
+        ? (yamlCategories.includes(categoryDir) ? yamlCategories : [categoryDir, ...yamlCategories])
+        : [categoryDir];
+
       const model: ModelDefinition = {
         id: parsed.id as string,
         name: parsed.name as string,
         category: categoryDir, // Directory is authoritative
+        categories,
         tags: (parsed.tags as string[]) || [],
         description: (parsed.description as string) || "",
         guiding_questions: (parsed.guiding_questions as string[]) || [],

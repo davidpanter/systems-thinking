@@ -20,7 +20,8 @@ export interface CounterbalanceModel {
 export interface ModelDefinition {
   id: string;
   name: string;
-  category: string; // Set by directory, not YAML
+  category: string; // Primary category, set by directory
+  categories: string[]; // All categories — from YAML or defaults to [category]
   tags: string[];
   description: string;
   guiding_questions: string[];

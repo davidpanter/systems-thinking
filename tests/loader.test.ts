@@ -53,6 +53,31 @@ describe("loadModels (overlay)", () => {
   });
 });
 
+describe("multi-facet categories", () => {
+  it("populates categories array from YAML when present", async () => {
+    const models = await loadModelsFromDirectory(fixturesDir);
+    const multiModel = models.find((m) => m.id === "multi-category-model")!;
+    expect(multiModel).toBeDefined();
+    expect(multiModel.categories).toEqual(["operations", "troubleshooting", "reliability"]);
+  });
+
+  it("defaults categories to [category] when not specified in YAML", async () => {
+    const models = await loadModelsFromDirectory(fixturesDir);
+    const testModel = models.find((m) => m.id === "test-model")!;
+    // No categories in YAML, should default to directory-based category
+    expect(testModel.categories).toEqual(["operations"]);
+  });
+
+  it("always includes directory category in categories even if not listed", async () => {
+    const models = await loadModelsFromDirectory(fixturesDir);
+    const multiModel = models.find((m) => m.id === "multi-category-model")!;
+    // Directory is "operations", and it should be in categories
+    expect(multiModel.categories).toContain("operations");
+    // Primary category field still comes from directory
+    expect(multiModel.category).toBe("operations");
+  });
+});
+
 describe("validateStrategyReferences", () => {
   it("returns no errors when all lens references are valid", () => {
     const modelIds = new Set(["model-a", "model-b", "model-c"]);
