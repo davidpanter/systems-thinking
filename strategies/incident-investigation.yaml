@@ -1,25 +1,20 @@
 id: incident-investigation
 name: Incident Investigation
 description: >
-  Parallel diagnostic tracks for investigating production incidents.
-  Each track composes lenses that build on each other's findings,
-  ending with a counterbalance. The diagnostic track isolates faults,
-  infrastructure checks foundations, concurrency examines parallelism,
-  and reasoning challenges assumptions.
+  Parallel diagnostic concerns for investigating production incidents.
+  Start with troubleshooting fundamentals, then branch into infrastructure,
+  observability, and reasoning based on what you find.
 
-tracks:
-  diagnostic:
-    lenses: [bottom-up, top-down, whats-changed, binary-search, occams-razor]
-    focus: "Check foundations first, trace from upstream, identify what changed, bisect to isolate, THEN challenge: are we overcomplicating this — is the simplest explanation the right one? Best for infrastructure or infrastructure+code issues."
-  infrastructure:
-    lenses: [bottom-up, caches, map-vs-territory]
-    focus: "Check foundations, audit cache layers, THEN challenge: does our monitoring actually reflect reality, or are we trusting a stale map?"
-  concurrency:
-    lenses: [parallelism, queuing-theory, occams-razor]
-    focus: "Look for races and deadlocks, analyze queue pressure, THEN: is there a simpler explanation than a concurrency bug?"
-  reasoning:
-    lenses: [occams-razor, hanlons-razor, second-order-thinking]
-    focus: "Start simple, assume mistakes not malice, THEN: what if the obvious explanation is a symptom and the real cause is a second-order effect?"
-  observability:
-    lenses: [observability-gaps, error-propagation, back-pressure, operational-complexity]
-    focus: "What can't we see, how did the error travel, was the system overwhelmed? THEN: is our tooling making diagnosis harder than the problem itself?"
+concerns:
+  - domain: troubleshooting
+    focus: "What are the symptoms? Start from foundations, bisect to isolate, check what changed."
+    weight: required
+  - domain: reliability
+    focus: "What can't we see? Was the system overwhelmed? Is back-pressure missing?"
+    weight: required
+  - domain: operations
+    focus: "Are queues backing up? Is the system at capacity? Are buffers overflowing?"
+    weight: conditional
+  - domain: reasoning
+    focus: "What's the simplest explanation? Are we assuming malice when it's a mistake? What second-order effects are hiding?"
+    weight: required

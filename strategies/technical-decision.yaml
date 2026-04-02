@@ -1,19 +1,19 @@
 id: technical-decision
 name: Technical Decision
 description: >
-  Multi-track analysis for evaluating build/buy decisions, migration
-  strategies, and technology choices. Each track composes lenses that
-  build on each other, ending with a counterbalance that challenges the
-  track's direction. Covers decision economics, migration risk, and
-  paradigm fit.
+  Evaluate build/buy decisions, migration strategies, and technology
+  choices. Covers decision economics, migration risk, and paradigm fit.
 
-tracks:
-  decision:
-    lenses: [build-vs-buy, dependency-risk, reversibility, constraints]
-    focus: "What's the true cost of each path, what dependencies does it create, can we reverse it? THEN: does the binding constraint make the decision for us regardless?"
-  migration:
-    lenses: [migration, blast-radius, error-budgets, occams-razor]
-    focus: "How do we transition safely, what's the blast radius if it goes wrong, how much risk can we budget? THEN: is incremental migration worth the dual-running complexity?"
-  paradigm:
-    lenses: [functional, domain-modeling, event-driven, kiss]
-    focus: "What does each paradigm reveal about the approach? THEN: is paradigm purity helping or adding accidental complexity?"
+concerns:
+  - domain: reasoning
+    focus: "What's the true cost of each path? Can we reverse it? What dependencies does it create?"
+    weight: required
+  - domain: operations
+    focus: "How do we transition safely? What's the migration strategy?"
+    weight: conditional
+  - domain: architecture
+    focus: "How does this affect system structure? What blast radius if it goes wrong?"
+    weight: conditional
+  - domain: paradigms
+    focus: "What does each paradigm lens reveal about the approach? Is the technology fit clear?"
+    weight: optional

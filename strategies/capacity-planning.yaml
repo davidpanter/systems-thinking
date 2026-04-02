@@ -2,17 +2,18 @@ id: capacity-planning
 name: Capacity Planning
 description: >
   Analyze whether a system can handle current and projected load.
-  Each track composes lenses building toward a conclusion, then a
-  counterbalance challenges it. Covers operational limits, dynamic
-  behavior, and safety margins.
+  Covers operational limits, dynamic behavior, and safety margins.
 
-tracks:
-  operations:
-    lenses: [constraints, queuing-theory, buffers, kiss]
-    focus: "Find the binding constraint, model queue stability, size buffers, THEN: are we over-engineering capacity for a problem that a simpler architecture would avoid?"
-  dynamics:
-    lenses: [stock-and-flow, system-dynamics, feedback-loops]
-    focus: "Map accumulations and rates, model behavior over time, THEN: what feedback loops will amplify or dampen the trends we're projecting?"
-  reasoning:
-    lenses: [margin-of-safety, inversion, constraints]
-    focus: "How much headroom? What if estimates are 2x wrong? THEN challenge from the other direction: are large margins hiding waste — where is unused capacity a constraint on cost?"
+concerns:
+  - domain: operations
+    focus: "Where are the bottlenecks? How do queues behave under load? Are buffers sized for peak?"
+    weight: required
+  - domain: dynamics
+    focus: "What feedback loops amplify or dampen load? What does growth look like over time?"
+    weight: required
+  - domain: reasoning
+    focus: "How much headroom do we need? What if our estimates are wrong by 2x?"
+    weight: required
+  - domain: reliability
+    focus: "What happens under extreme load? Is there back-pressure? Does it degrade gracefully?"
+    weight: conditional

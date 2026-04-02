@@ -70,16 +70,17 @@ export interface CrossReference {
 
 // --- Strategy Definition (loaded from YAML) ---
 
-export interface StrategyTrack {
-  lenses: string[];
-  focus: string;
+export interface StrategyConcern {
+  domain: string;   // Maps to a category/cluster
+  focus: string;    // Question guiding model selection for this concern
+  weight: "required" | "conditional" | "optional";
 }
 
 export interface StrategyDefinition {
   id: string;
   name: string;
   description: string;
-  tracks: Record<string, StrategyTrack>;
+  concerns: StrategyConcern[];
 }
 
 // --- Zod Schemas for tool inputs ---

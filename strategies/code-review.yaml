@@ -1,22 +1,20 @@
 id: code-review
 name: Code Review
 description: >
-  Multi-track review of code changes covering security posture,
-  architectural quality, and failure reasoning. Each track composes
-  2-3 lenses that build on each other, ending with a counterbalance
-  that challenges the track's conclusions. Run tracks in parallel,
-  then synthesize across tracks for cross-cutting concerns.
+  Concern-driven review of code changes. Evaluate each concern's relevance
+  based on the scale and nature of the change — a 1-line fix needs
+  different depth than a large refactor.
 
-tracks:
-  security:
-    lenses: [attack-surface, trust-boundaries, least-privilege, kiss]
-    focus: "What's exposed? Where are the boundaries? Who has too much access? THEN: are we over-securing at the cost of simplicity?"
-  architecture:
-    lenses: [separation-of-concerns, modularity, coupling-cohesion, kiss]
-    focus: "Are concerns separated? Are modules independent? What's tightly coupled? THEN: is this decomposition earning its complexity?"
-  reasoning:
-    lenses: [inversion, second-order-thinking, occams-razor]
-    focus: "How could this fail? What are the downstream consequences? THEN: are we overthinking this — is the simplest explanation enough?"
-  data-and-state:
-    lenses: [state-ownership, error-propagation, contract-boundaries, occams-razor]
-    focus: "Who owns this state, how do errors travel, are contracts explicit? THEN: is the analysis revealing real risk, or are we over-scrutinizing stable code?"
+concerns:
+  - domain: security
+    focus: "What security implications does this change have? New inputs, changed boundaries, altered access patterns?"
+    weight: required
+  - domain: architecture
+    focus: "Does this change affect system structure, module boundaries, or component relationships?"
+    weight: conditional
+  - domain: reliability
+    focus: "Could this change affect error handling, failure modes, or system resilience?"
+    weight: conditional
+  - domain: reasoning
+    focus: "What could go wrong? What downstream consequences haven't been considered?"
+    weight: required

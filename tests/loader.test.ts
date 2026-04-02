@@ -79,64 +79,64 @@ describe("multi-facet categories", () => {
 });
 
 describe("validateStrategyReferences", () => {
-  it("returns no errors when all lens references are valid", () => {
-    const modelIds = new Set(["model-a", "model-b", "model-c"]);
+  it("returns no errors when all concern domains are valid categories", () => {
+    const categoryNames = new Set(["security", "architecture", "reasoning"]);
     const strategies = [
       {
         id: "test-strategy",
         name: "Test",
         description: "test",
-        tracks: {
-          track1: { lenses: ["model-a", "model-b"], focus: "test" },
-          track2: { lenses: ["model-c"], focus: "test" },
-        },
+        concerns: [
+          { domain: "security", focus: "test", weight: "required" as const },
+          { domain: "architecture", focus: "test", weight: "conditional" as const },
+        ],
       },
     ];
-    const errors = validateStrategyReferences(strategies, modelIds);
+    const errors = validateStrategyReferences(strategies, categoryNames);
     expect(errors).toEqual([]);
   });
 
-  it("returns errors for invalid lens references", () => {
-    const modelIds = new Set(["model-a"]);
+  it("returns errors for invalid concern domains", () => {
+    const categoryNames = new Set(["security"]);
     const strategies = [
       {
         id: "test-strategy",
         name: "Test",
         description: "test",
-        tracks: {
-          track1: { lenses: ["model-a", "nonexistent"], focus: "test" },
-        },
+        concerns: [
+          { domain: "security", focus: "test", weight: "required" as const },
+          { domain: "nonexistent", focus: "test", weight: "required" as const },
+        ],
       },
     ];
-    const errors = validateStrategyReferences(strategies, modelIds);
+    const errors = validateStrategyReferences(strategies, categoryNames);
     expect(errors).toHaveLength(1);
     expect(errors[0]).toContain("test-strategy");
-    expect(errors[0]).toContain("track1");
     expect(errors[0]).toContain("nonexistent");
   });
 
-  it("reports all invalid references across multiple strategies and tracks", () => {
-    const modelIds = new Set(["model-a"]);
+  it("reports all invalid references across multiple strategies", () => {
+    const categoryNames = new Set(["security"]);
     const strategies = [
       {
         id: "strategy-1",
         name: "S1",
         description: "test",
-        tracks: {
-          t1: { lenses: ["model-a", "bad-1"], focus: "test" },
-          t2: { lenses: ["bad-2"], focus: "test" },
-        },
+        concerns: [
+          { domain: "bad-1", focus: "test", weight: "required" as const },
+          { domain: "bad-2", focus: "test", weight: "required" as const },
+        ],
       },
       {
         id: "strategy-2",
         name: "S2",
         description: "test",
-        tracks: {
-          t1: { lenses: ["bad-3"], focus: "test" },
-        },
+        concerns: [
+          { domain: "bad-3", focus: "test", weight: "required" as const },
+        ],
       },
     ];
-    const errors = validateStrategyReferences(strategies, modelIds);
+    const errors = validateStrategyReferences(strategies, categoryNames);
     expect(errors).toHaveLength(3);
   });
 });

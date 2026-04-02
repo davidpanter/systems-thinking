@@ -8,6 +8,7 @@ import { hideBin } from "yargs/helpers";
 import chalk from "chalk";
 import { loadModels, loadStrategies, validateStrategyReferences } from "./loader.js";
 import { SystemsThinkingServer } from "./server.js";
+import { computeClusters } from "./matcher.js";
 import { StartAnalysisInput, ApplyLensInput, ExpandSelectionInput, SynthesizeInput, GetStrategyInput } from "./types.js";
 import type { StrategyDefinition } from "./types.js";
 
@@ -29,9 +30,9 @@ const builtinStrategiesDir = path.join(__dirname, "..", "strategies");
 const strategies = await loadStrategies(builtinStrategiesDir, customModelsDir);
 const strategyMap = new Map<string, StrategyDefinition>(strategies.map((s) => [s.id, s]));
 
-// Validate strategy→model references at startup
-const modelIds = new Set(models.map((m) => m.id));
-const validationErrors = validateStrategyReferences(strategies, modelIds);
+// Validate strategy concern domains reference valid categories
+const categoryNames = new Set(models.map((m) => m.category));
+const validationErrors = validateStrategyReferences(strategies, categoryNames);
 if (validationErrors.length > 0) {
   for (const err of validationErrors) {
     console.error(chalk.red(`VALIDATION ERROR: ${err}`));
@@ -49,7 +50,7 @@ if (!disableLogging) {
     console.error(chalk.gray(`  [${m.category}] ${m.name} (${m.id})`));
   }
   for (const s of strategies) {
-    console.error(chalk.gray(`  {strategy} ${s.name} (${s.id}) — ${Object.keys(s.tracks).length} tracks`));
+    console.error(chalk.gray(`  {strategy} ${s.name} (${s.id}) — ${s.concerns.length} concerns`));
   }
 }
 
@@ -226,15 +227,13 @@ The session stays open after synthesis. If the synthesis reveals gaps, apply mor
 
 mcpServer.registerTool("get_strategy", {
   title: "Get Strategy",
-  description: `Get a predefined multi-track analysis strategy. Strategies define parallel analysis tracks, each with 2-3 focused lenses.
+  description: `Get a predefined analysis strategy. Strategies define which concerns to cover and how to approach them, without prescribing specific models.
 
 Available strategies: ${strategies.map((s) => `${s.id} (${s.name})`).join(", ")}
 
-Call without strategyId to list all strategies. Call with a strategyId to get the full playbook.
+Call without strategyId to list all strategies. Call with a strategyId to get the concern map.
 
-USAGE: Get a strategy, then run each track as a separate analysis session (or in parallel with subagents). Each track calls start_analysis → apply_lens (for each lens in the track) → synthesize. After all tracks complete, do a final cross-track synthesis combining findings from all tracks.
-
-This is the recommended approach for broad analysis (code review, system design, security audit) where multiple independent perspectives are more valuable than a single sequential chain.`,
+USAGE: Get a strategy, then for each concern: evaluate relevance to your specific problem, use expand_selection with models from that concern's domain, pick appropriate lenses, and apply them. Concerns marked "required" should always be evaluated. "Conditional" concerns depend on the scale and nature of the change. Each concern can be run in parallel as an independent analysis track.`,
   inputSchema: GetStrategyInput,
 }, async (args) => {
   if (!args.strategyId) {
@@ -243,11 +242,11 @@ This is the recommended approach for broad analysis (code review, system design,
       id: s.id,
       name: s.name,
       description: s.description,
-      trackCount: Object.keys(s.tracks).length,
-      tracks: Object.entries(s.tracks).map(([name, track]) => ({
-        name,
-        lensCount: track.lenses.length,
-        focus: track.focus,
+      concernCount: s.concerns.length,
+      concerns: s.concerns.map((c) => ({
+        domain: c.domain,
+        focus: c.focus,
+        weight: c.weight,
       })),
     }));
     return {
@@ -265,17 +264,24 @@ This is the recommended approach for broad analysis (code review, system design,
     };
   }
 
-  // Enrich tracks with full model info
-  const enrichedTracks = Object.entries(strategy.tracks).map(([trackName, track]) => ({
-    trackName,
-    focus: track.focus,
-    lenses: track.lenses.map((id) => {
-      const model = thinkingServer.getModel(id);
-      return model
-        ? { modelId: model.id, name: model.name, guidingQuestions: model.guiding_questions, requiredFields: model.required_fields }
-        : { modelId: id, name: id, error: "Model not found" };
-    }),
-  }));
+  // Enrich concerns with cluster info (available models in each domain)
+  const clusters = computeClusters(models);
+  const clusterMap = new Map(clusters.map((c) => [c.id, c]));
+
+  const enrichedConcerns = strategy.concerns.map((concern) => {
+    const cluster = clusterMap.get(concern.domain);
+    return {
+      domain: concern.domain,
+      focus: concern.focus,
+      weight: concern.weight,
+      availableModels: cluster
+        ? cluster.modelIds.map((id) => {
+            const m = thinkingServer.getModel(id);
+            return m ? { id: m.id, name: m.name, description: m.description.trim().slice(0, 100) } : { id, name: id };
+          })
+        : [],
+    };
+  });
 
   return {
     content: [{ type: "text" as const, text: JSON.stringify({
@@ -284,8 +290,8 @@ This is the recommended approach for broad analysis (code review, system design,
         name: strategy.name,
         description: strategy.description,
       },
-      tracks: enrichedTracks,
-      workflow: `Run each track as a separate analysis session (or in parallel). For each track: start_analysis → apply_lens for each lens → synthesize. Then do a final synthesis combining all track findings.`,
+      concerns: enrichedConcerns,
+      workflow: `For each concern: evaluate relevance to your problem (required = always, conditional = depends on scale/nature). Use expand_selection with chosen models from the concern's domain, then apply_lens. Concerns can be run in parallel.`,
     }, null, 2) }],
   };
 });

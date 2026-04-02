@@ -75,7 +75,7 @@ export async function loadStrategiesFromDirectory(
       id: parsed.id as string,
       name: parsed.name as string,
       description: (parsed.description as string) || "",
-      tracks: (parsed.tracks as StrategyDefinition["tracks"]) || {},
+      concerns: (parsed.concerns as StrategyDefinition["concerns"]) || [],
     });
   }
 
@@ -98,23 +98,21 @@ export async function loadStrategies(
 }
 
 /**
- * Validate that all lens IDs referenced in strategy tracks exist in the
- * loaded model set. Returns an array of human-readable error strings,
+ * Validate that all concern domains in strategies reference valid
+ * category names. Returns an array of human-readable error strings,
  * or an empty array if all references are valid.
  */
 export function validateStrategyReferences(
   strategies: StrategyDefinition[],
-  modelIds: Set<string>
+  categoryNames: Set<string>
 ): string[] {
   const errors: string[] = [];
   for (const strategy of strategies) {
-    for (const [trackName, track] of Object.entries(strategy.tracks)) {
-      for (const lensId of track.lenses) {
-        if (!modelIds.has(lensId)) {
-          errors.push(
-            `Strategy '${strategy.id}' track '${trackName}' references unknown model '${lensId}'`
-          );
-        }
+    for (const concern of strategy.concerns) {
+      if (!categoryNames.has(concern.domain)) {
+        errors.push(
+          `Strategy '${strategy.id}' concern references unknown category '${concern.domain}'`
+        );
       }
     }
   }

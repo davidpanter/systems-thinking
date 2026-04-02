@@ -1,27 +1,26 @@
 id: system-design
 name: System Design
 description: >
-  Multi-track analysis for designing or evaluating system architecture.
-  Each track composes lenses that build on each other, ending with a
-  counterbalance that challenges the track's direction. Covers structure,
-  operations, dynamics, and resilience.
+  Comprehensive analysis for designing or evaluating system architecture.
+  Covers structural decomposition, operational readiness, dynamic behavior,
+  resilience, and data flow.
 
-tracks:
-  architecture:
-    lenses: [modularity, coupling-cohesion, separation-of-concerns, kiss]
-    focus: "Map the modules, measure coupling, verify separation, THEN challenge: is this decomposition worth the complexity, or would something simpler work?"
-  operations:
-    lenses: [constraints, queuing-theory, buffers, margin-of-safety]
-    focus: "Find the bottleneck, model the queues, size the buffers, THEN: are we over-provisioning — is our margin justified by real uncertainty?"
-  dynamics:
-    lenses: [feedback-loops, stock-and-flow, second-order-thinking]
-    focus: "Map the feedback loops, trace stocks and flows, THEN: what second-order effects will surprise us when this goes live?"
-  resilience:
-    lenses: [failure-modes, blast-radius, idempotency, reversibility]
-    focus: "How does it fail? How far does failure spread? Are retries safe? THEN: can we undo things when they go wrong?"
-  data-flow:
-    lenses: [state-ownership, data-transformation-fidelity, contract-boundaries, functional]
-    focus: "Who owns the state, does data survive transformations intact, are contracts explicit? THEN challenge through a functional lens: could this be stateless transformations instead of shared mutable state?"
-  operational-readiness:
-    lenses: [observability-gaps, operational-complexity, graceful-degradation, kiss]
-    focus: "Can you see what's happening, can you operate it, does it degrade gracefully? THEN challenge: is the observability and degradation machinery worth its own complexity?"
+concerns:
+  - domain: architecture
+    focus: "How is the system decomposed? Are modules independent? Are interfaces clean?"
+    weight: required
+  - domain: operations
+    focus: "Where are the bottlenecks? How does it handle load? Are buffers sized correctly?"
+    weight: required
+  - domain: dynamics
+    focus: "What feedback loops exist? How does behavior change over time?"
+    weight: conditional
+  - domain: reliability
+    focus: "Can you see what's happening? Can you operate it? Does it degrade gracefully?"
+    weight: required
+  - domain: paradigms
+    focus: "What does each paradigm lens reveal? Is state ownership clear? Are data flows composable?"
+    weight: conditional
+  - domain: reasoning
+    focus: "What could go wrong? What second-order effects will surprise us?"
+    weight: required
