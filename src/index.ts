@@ -8,7 +8,7 @@ import { hideBin } from "yargs/helpers";
 import chalk from "chalk";
 import { loadModels, loadStrategies, validateStrategyReferences } from "./loader.js";
 import { SystemsThinkingServer } from "./server.js";
-import { StartAnalysisInput, ApplyLensInput, SynthesizeInput, GetStrategyInput } from "./types.js";
+import { StartAnalysisInput, ApplyLensInput, ExpandSelectionInput, SynthesizeInput, GetStrategyInput } from "./types.js";
 import type { StrategyDefinition } from "./types.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -64,13 +64,17 @@ const mcpServer = new McpServer({
 
 mcpServer.registerTool("start_analysis", {
   title: "Start Analysis",
-  description: `Begin a systems thinking analysis session. Frames the problem and suggests relevant analytical lenses.
+  description: `Begin a systems thinking analysis session. Returns model clusters organized by category for you to review and select from.
 
-BEFORE calling this, consider whether a predefined strategy fits your use case. Call get_strategy (with no arguments) to see available strategies like code-review, incident-investigation, system-design, security-audit, and capacity-planning. Strategies define parallel analysis tracks that are more focused than ad-hoc lens selection.
+BEFORE calling this, consider whether a predefined strategy fits your use case. Call get_strategy (with no arguments) to see available strategies.
 
-If no strategy fits, use this tool to start a custom session. Returns a sessionId, suggested lenses, and a recommended sequence of 3 models.
+THE EXPECTED WORKFLOW IS:
+1. start_analysis → review clusters, pick relevant models
+2. expand_selection → get full details + graph neighbors for your picks
+3. apply_lens (2-4 times) → apply your chosen lenses
+4. synthesize → integrate findings
 
-THE EXPECTED WORKFLOW IS: start_analysis → apply_lens (2-4 times with different models) → synthesize. A single lens gives you one perspective. The value is in COMPOSING multiple perspectives. Apply at least 2-3 lenses before synthesizing.`,
+The value is in COMPOSING multiple perspectives. Apply at least 2-3 lenses before synthesizing.`,
   inputSchema: StartAnalysisInput,
 }, async (args) => {
   const result = thinkingServer.startAnalysis(args);
@@ -80,9 +84,41 @@ THE EXPECTED WORKFLOW IS: start_analysis → apply_lens (2-4 times with differen
     console.error(chalk.white(`Problem: ${result.problem}`));
     console.error(
       chalk.gray(
-        `Suggested: ${result.suggestedLenses.map((s) => s.name).join(", ") || "none"}`
+        `Clusters: ${result.clusters.map((c) => `${c.id} (${c.modelIds.length})`).join(", ")}`
       )
     );
+  }
+
+  return {
+    content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }],
+  };
+});
+
+// --- Tool: expand_selection ---
+
+mcpServer.registerTool("expand_selection", {
+  title: "Expand Selection",
+  description: `Get full details for selected models plus their graph neighbors and counterbalances.
+
+Call after start_analysis with the model IDs you've chosen. Returns:
+- Full model details (guiding questions, required fields) for your selection
+- Graph neighbors (related models one hop away) with relationship reasons
+- Counterbalances (opposing perspectives) with tension descriptions
+- Uncovered categories to highlight analytical gaps
+
+Use this to review your selection before committing to apply_lens calls.`,
+  inputSchema: ExpandSelectionInput,
+}, async (args) => {
+  const result = thinkingServer.expandSelection(args);
+
+  if (!disableLogging) {
+    if (result.error) {
+      console.error(chalk.red(`\n✗ ${result.error}`));
+    } else {
+      console.error(chalk.blue(`\n📋 Expanded: ${args.modelIds.join(", ")}`));
+      console.error(chalk.gray(`   Neighbors: ${result.graphNeighbors?.map((n) => n.modelId).join(", ") || "none"}`));
+      console.error(chalk.gray(`   Counterbalances: ${result.counterbalances?.map((c) => c.modelId).join(", ") || "none"}`));
+    }
   }
 
   return {

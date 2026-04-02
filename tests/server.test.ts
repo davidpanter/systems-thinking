@@ -82,33 +82,24 @@ describe("SystemsThinkingServer", () => {
       expect(result.problem).toBe("System is slow under load");
     });
 
-    it("suggests lenses based on problem text", () => {
+    it("returns model clusters grouped by category", () => {
       const result = server.startAnalysis({
         problem: "throughput bottleneck causing high latency",
       });
-      expect(result.suggestedLenses.length).toBeGreaterThan(0);
-    });
-
-    it("returns a recommendedSequence of up to 3 models", () => {
-      const result = server.startAnalysis({
-        problem: "throughput bottleneck causing high latency",
-      });
-      expect(result.recommendedSequence.length).toBeGreaterThan(0);
-      expect(result.recommendedSequence.length).toBeLessThanOrEqual(3);
-      expect(result.workflow).toContain("RECOMMENDED");
-    });
-
-    it("includes counterbalance in recommendedSequence when available", () => {
-      const result = server.startAnalysis({
-        problem: "throughput bottleneck capacity",
-      });
-      // constraints should be the top match, and it has kiss as a counterbalance
-      const ids = result.recommendedSequence.map((s) => s.modelId);
-      if (ids.includes("constraints")) {
-        expect(ids).toContain("kiss");
-        const kissEntry = result.recommendedSequence.find((s) => s.modelId === "kiss");
-        expect(kissEntry?.reason).toContain("Counterbalance");
+      expect(result.clusters.length).toBeGreaterThan(0);
+      // Each cluster has required fields
+      for (const c of result.clusters) {
+        expect(c.id).toBeTruthy();
+        expect(c.theme).toBeTruthy();
+        expect(c.modelIds.length).toBeGreaterThan(0);
       }
+    });
+
+    it("returns workflow guidance", () => {
+      const result = server.startAnalysis({
+        problem: "throughput bottleneck",
+      });
+      expect(result.workflow).toBeTruthy();
     });
 
     it("creates independent sessions on duplicate calls", () => {
@@ -350,6 +341,62 @@ describe("SystemsThinkingServer", () => {
         findings: { arrival_rate: "100/s" },
       });
       expect(result.modelId).toBe("queuing-theory");
+    });
+  });
+
+  describe("expandSelection", () => {
+    it("returns full details for selected models", () => {
+      const { sessionId } = server.startAnalysis({ problem: "test" });
+      const result = server.expandSelection({
+        sessionId,
+        modelIds: ["constraints"],
+      });
+      expect(result.selected).toHaveLength(1);
+      expect(result.selected![0].id).toBe("constraints");
+      expect(result.selected![0].guidingQuestions).toBeDefined();
+      expect(result.selected![0].requiredFields).toBeDefined();
+    });
+
+    it("returns graph neighbors from related_models", () => {
+      const { sessionId } = server.startAnalysis({ problem: "test" });
+      const result = server.expandSelection({
+        sessionId,
+        modelIds: ["constraints"],
+      });
+      // constraints has queuing-theory as a related model
+      const neighborIds = result.graphNeighbors!.map((n) => n.modelId);
+      expect(neighborIds).toContain("queuing-theory");
+    });
+
+    it("returns counterbalances", () => {
+      const { sessionId } = server.startAnalysis({ problem: "test" });
+      const result = server.expandSelection({
+        sessionId,
+        modelIds: ["constraints"],
+      });
+      // constraints has kiss as counterbalance
+      const cbIds = result.counterbalances!.map((c) => c.modelId);
+      expect(cbIds).toContain("kiss");
+    });
+
+    it("deduplicates neighbors across multiple selected models", () => {
+      const { sessionId } = server.startAnalysis({ problem: "test" });
+      const result = server.expandSelection({
+        sessionId,
+        modelIds: ["constraints", "queuing-theory"],
+      });
+      // Neither selected model should appear as a neighbor
+      const neighborIds = result.graphNeighbors!.map((n) => n.modelId);
+      expect(neighborIds).not.toContain("constraints");
+      expect(neighborIds).not.toContain("queuing-theory");
+    });
+
+    it("returns error for invalid session", () => {
+      const result = server.expandSelection({
+        sessionId: "nonexistent",
+        modelIds: ["constraints"],
+      });
+      expect(result.error).toContain("Session not found");
     });
   });
 });

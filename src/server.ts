@@ -6,8 +6,8 @@ import type {
   LensSuggestion,
   CrossReference,
 } from "./types.js";
-import { suggestLenses, suggestLensesWithGraph, findCrossReferences, getRelatedSuggestions, getCounterbalanceSuggestions } from "./matcher.js";
-import type { CounterbalanceSuggestion } from "./matcher.js";
+import { suggestLenses, suggestLensesWithGraph, findCrossReferences, getRelatedSuggestions, getCounterbalanceSuggestions, computeClusters } from "./matcher.js";
+import type { CounterbalanceSuggestion, ModelCluster } from "./matcher.js";
 
 export class SystemsThinkingServer {
   private models: ModelDefinition[];
@@ -30,8 +30,7 @@ export class SystemsThinkingServer {
   }): {
     sessionId: string;
     problem: string;
-    suggestedLenses: LensSuggestion[];
-    recommendedSequence: Array<{ modelId: string; name: string; reason: string }>;
+    clusters: ModelCluster[];
     workflow: string;
   } {
     const sessionId = randomUUID().slice(0, 12);
@@ -45,45 +44,113 @@ export class SystemsThinkingServer {
     };
     this.sessions.set(sessionId, session);
 
-    const searchText = [input.problem, input.context, input.scope]
-      .filter(Boolean)
-      .join(" ");
-
-    const suggested = suggestLensesWithGraph(searchText, this.models, []);
-
-    // Build a recommended sequence of 3 from top suggestions
-    // If a top suggestion has a counterbalance, slot it in as the second lens
-    const sequence: Array<{ modelId: string; name: string; reason: string }> = [];
-    if (suggested.length > 0) {
-      const first = suggested[0];
-      sequence.push({ modelId: first.modelId, name: first.name, reason: "Primary lens — strongest match to your problem" });
-
-      // Look for a counterbalance to the first lens
-      const firstModel = this.modelMap.get(first.modelId);
-      const counterbalance = firstModel?.counterbalances.find(
-        (c) => this.modelMap.has(c.id)
-      );
-      if (counterbalance) {
-        const cbModel = this.modelMap.get(counterbalance.id)!;
-        sequence.push({ modelId: cbModel.id, name: cbModel.name, reason: `Counterbalance — ${counterbalance.tension}` });
-      } else if (suggested.length > 1) {
-        sequence.push({ modelId: suggested[1].modelId, name: suggested[1].name, reason: "Complementary perspective" });
-      }
-
-      // Third: next best that isn't already in the sequence
-      const usedIds = new Set(sequence.map((s) => s.modelId));
-      const third = suggested.find((s) => !usedIds.has(s.modelId));
-      if (third) {
-        sequence.push({ modelId: third.modelId, name: third.name, reason: "Additional perspective for depth" });
-      }
-    }
+    const clusters = computeClusters(this.models);
 
     return {
       sessionId,
       problem: input.problem,
-      suggestedLenses: suggested,
-      recommendedSequence: sequence,
-      workflow: `RECOMMENDED: Apply these ${sequence.length} lenses in order, then call synthesize to integrate findings.`,
+      clusters,
+      workflow: "Review the clusters above. Pick 1-3 relevant clusters or specific models, then call expand_selection to get full model details and graph neighbors before applying lenses.",
+    };
+  }
+
+  expandSelection(input: {
+    sessionId: string;
+    modelIds: string[];
+  }): {
+    selected?: Array<{
+      id: string;
+      name: string;
+      description: string;
+      guidingQuestions: string[];
+      requiredFields: ModelDefinition["required_fields"];
+    }>;
+    graphNeighbors?: Array<{
+      modelId: string;
+      name: string;
+      relationship: string;
+      from: string;
+    }>;
+    counterbalances?: Array<{
+      modelId: string;
+      name: string;
+      tension: string;
+      for: string;
+    }>;
+    uncoveredCategories?: string[];
+    error?: string;
+    availableSessions?: string[];
+  } {
+    const session = this.sessions.get(input.sessionId);
+    if (!session) {
+      return {
+        error: `Session not found: ${input.sessionId}`,
+        availableSessions: [...this.sessions.keys()],
+      };
+    }
+
+    const selectedIds = new Set(input.modelIds);
+
+    // Build selected model details
+    const selected = input.modelIds
+      .map((id) => this.modelMap.get(id))
+      .filter((m): m is ModelDefinition => m !== undefined)
+      .map((m) => ({
+        id: m.id,
+        name: m.name,
+        description: m.description.trim(),
+        guidingQuestions: m.guiding_questions,
+        requiredFields: m.required_fields,
+      }));
+
+    // Walk graph: collect related_models from all selected, excluding selected models
+    const neighborMap = new Map<string, { relationship: string; from: string }>();
+    const counterbalanceMap = new Map<string, { tension: string; for: string }>();
+
+    for (const id of input.modelIds) {
+      const model = this.modelMap.get(id);
+      if (!model) continue;
+
+      for (const rel of model.related_models) {
+        if (!selectedIds.has(rel.id) && this.modelMap.has(rel.id) && !neighborMap.has(rel.id)) {
+          neighborMap.set(rel.id, { relationship: rel.reason, from: id });
+        }
+      }
+      for (const cb of model.counterbalances) {
+        if (!selectedIds.has(cb.id) && this.modelMap.has(cb.id) && !counterbalanceMap.has(cb.id)) {
+          counterbalanceMap.set(cb.id, { tension: cb.tension, for: id });
+        }
+      }
+    }
+
+    const graphNeighbors = [...neighborMap.entries()].map(([id, info]) => ({
+      modelId: id,
+      name: this.modelMap.get(id)!.name,
+      relationship: info.relationship,
+      from: info.from,
+    }));
+
+    const counterbalances = [...counterbalanceMap.entries()].map(([id, info]) => ({
+      modelId: id,
+      name: this.modelMap.get(id)!.name,
+      tension: info.tension,
+      for: info.for,
+    }));
+
+    // Find uncovered categories
+    const coveredCategories = new Set<string>();
+    for (const id of input.modelIds) {
+      const m = this.modelMap.get(id);
+      if (m) coveredCategories.add(m.category);
+    }
+    const allCategories = new Set(this.models.map((m) => m.category));
+    const uncoveredCategories = [...allCategories].filter((c) => !coveredCategories.has(c)).sort();
+
+    return {
+      selected,
+      graphNeighbors,
+      counterbalances,
+      uncoveredCategories,
     };
   }
 

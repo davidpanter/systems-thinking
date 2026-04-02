@@ -100,6 +100,11 @@ export const ApplyLensInput = z.object({
   nextLens: z.string().optional().describe("Which lens you want to apply next"),
 });
 
+export const ExpandSelectionInput = z.object({
+  sessionId: z.string().describe("Session ID from start_analysis"),
+  modelIds: z.array(z.string()).describe("Model IDs to expand (e.g. ['modularity', 'coupling-cohesion'])"),
+});
+
 export const GetStrategyInput = z.object({
   strategyId: z.string().optional().describe("Strategy ID to retrieve (e.g. 'code-review'). Omit to list all available strategies."),
 });
