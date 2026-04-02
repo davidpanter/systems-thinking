@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { loadModelsFromDirectory, loadModels, validateStrategyReferences } from "../src/loader.js";
+import { loadModelsFromDirectory, loadModels, validateStrategyReferences, validateModelDefinitions } from "../src/loader.js";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -138,5 +138,94 @@ describe("validateStrategyReferences", () => {
     ];
     const errors = validateStrategyReferences(strategies, categoryNames);
     expect(errors).toHaveLength(3);
+  });
+});
+
+describe("validateModelDefinitions", () => {
+  it("returns no errors for well-formed models", () => {
+    const models = [
+      {
+        id: "test", name: "Test", category: "cat", categories: ["cat"],
+        tags: ["t"], description: "desc",
+        guiding_questions: ["?"],
+        required_fields: { f: { description: "d", hint: "h" } },
+        related_models: [{ id: "other", reason: "r" }],
+        counterbalances: [{ id: "cb", tension: "t" }],
+      },
+    ];
+    const errors = validateModelDefinitions(models);
+    expect(errors).toEqual([]);
+  });
+
+  it("catches missing hint on required_fields", () => {
+    const models = [
+      {
+        id: "bad", name: "Bad", category: "cat", categories: ["cat"],
+        tags: ["t"], description: "desc",
+        guiding_questions: ["?"],
+        required_fields: { f: { description: "d" } },
+        related_models: [], counterbalances: [],
+      },
+    ];
+    const errors = validateModelDefinitions(models as any);
+    expect(errors.length).toBeGreaterThan(0);
+    expect(errors[0]).toContain("bad");
+    expect(errors[0]).toContain("hint");
+  });
+
+  it("catches missing reason on related_models", () => {
+    const models = [
+      {
+        id: "bad", name: "Bad", category: "cat", categories: ["cat"],
+        tags: ["t"], description: "desc",
+        guiding_questions: ["?"],
+        required_fields: { f: { description: "d", hint: "h" } },
+        related_models: [{ id: "other" }],
+        counterbalances: [],
+      },
+    ];
+    const errors = validateModelDefinitions(models as any);
+    expect(errors.length).toBeGreaterThan(0);
+    expect(errors[0]).toContain("bad");
+    expect(errors[0]).toContain("reason");
+  });
+
+  it("catches missing tension on counterbalances", () => {
+    const models = [
+      {
+        id: "bad", name: "Bad", category: "cat", categories: ["cat"],
+        tags: ["t"], description: "desc",
+        guiding_questions: ["?"],
+        required_fields: { f: { description: "d", hint: "h" } },
+        related_models: [],
+        counterbalances: [{ id: "cb" }],
+      },
+    ];
+    const errors = validateModelDefinitions(models as any);
+    expect(errors.length).toBeGreaterThan(0);
+    expect(errors[0]).toContain("bad");
+    expect(errors[0]).toContain("tension");
+  });
+
+  it("catches missing required top-level fields", () => {
+    const models = [
+      {
+        id: "bad", category: "cat", categories: ["cat"],
+        tags: [], description: "",
+        guiding_questions: [],
+        required_fields: {},
+        related_models: [], counterbalances: [],
+      },
+    ];
+    const errors = validateModelDefinitions(models as any);
+    expect(errors.length).toBeGreaterThan(0);
+    expect(errors.some((e: string) => e.includes("name"))).toBe(true);
+  });
+
+  it("validates all 53 built-in models pass", async () => {
+    const builtinDir = path.join(__dirname, "..", "models");
+    const models = await loadModelsFromDirectory(builtinDir);
+    const errors = validateModelDefinitions(models);
+    expect(errors).toEqual([]);
   });
 });

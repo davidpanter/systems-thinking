@@ -82,6 +82,55 @@ export async function loadStrategiesFromDirectory(
   return strategies;
 }
 
+/**
+ * Validate model definitions have all required fields properly formed.
+ * Returns an array of human-readable error strings.
+ */
+export function validateModelDefinitions(
+  models: ModelDefinition[]
+): string[] {
+  const errors: string[] = [];
+  for (const m of models) {
+    if (!m.name) {
+      errors.push(`Model '${m.id}' is missing 'name'`);
+    }
+    if (!m.description) {
+      errors.push(`Model '${m.id}' is missing 'description'`);
+    }
+    if (!m.guiding_questions || m.guiding_questions.length === 0) {
+      errors.push(`Model '${m.id}' has no guiding_questions`);
+    }
+    // Validate required_fields: each must have description and hint
+    for (const [key, field] of Object.entries(m.required_fields)) {
+      if (!field.description) {
+        errors.push(`Model '${m.id}' required_field '${key}' is missing 'description'`);
+      }
+      if (!field.hint) {
+        errors.push(`Model '${m.id}' required_field '${key}' is missing 'hint'`);
+      }
+    }
+    // Validate related_models: each must have id and reason
+    for (const rel of m.related_models) {
+      if (!rel.id) {
+        errors.push(`Model '${m.id}' has a related_model missing 'id'`);
+      }
+      if (!rel.reason) {
+        errors.push(`Model '${m.id}' has a related_model missing 'reason'`);
+      }
+    }
+    // Validate counterbalances: each must have id and tension
+    for (const cb of m.counterbalances) {
+      if (!cb.id) {
+        errors.push(`Model '${m.id}' has a counterbalance missing 'id'`);
+      }
+      if (!cb.tension) {
+        errors.push(`Model '${m.id}' has a counterbalance missing 'tension'`);
+      }
+    }
+  }
+  return errors;
+}
+
 export async function loadStrategies(
   builtinDir: string,
   customDir?: string

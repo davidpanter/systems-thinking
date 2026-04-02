@@ -6,7 +6,7 @@ import { fileURLToPath } from "url";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import chalk from "chalk";
-import { loadModels, loadStrategies, validateStrategyReferences } from "./loader.js";
+import { loadModels, loadStrategies, validateStrategyReferences, validateModelDefinitions } from "./loader.js";
 import { SystemsThinkingServer } from "./server.js";
 import { computeClusters } from "./matcher.js";
 import { StartAnalysisInput, ApplyLensInput, ExpandSelectionInput, SynthesizeInput, GetStrategyInput } from "./types.js";
@@ -29,6 +29,15 @@ const models = await loadModels(builtinModelsDir, customModelsDir);
 const builtinStrategiesDir = path.join(__dirname, "..", "strategies");
 const strategies = await loadStrategies(builtinStrategiesDir, customModelsDir);
 const strategyMap = new Map<string, StrategyDefinition>(strategies.map((s) => [s.id, s]));
+
+// Validate model definitions at startup
+const modelErrors = validateModelDefinitions(models);
+if (modelErrors.length > 0) {
+  for (const err of modelErrors) {
+    console.error(chalk.red(`MODEL VALIDATION ERROR: ${err}`));
+  }
+  process.exit(1);
+}
 
 // Validate strategy concern domains reference valid categories
 const categoryNames = new Set(models.map((m) => m.category));
