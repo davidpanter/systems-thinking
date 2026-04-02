@@ -1,0 +1,45 @@
+id: domain-modeling
+name: Domain Modeling Lens
+categories: [paradigms, architecture]
+tags: [OOP, domain, entities, responsibility, identity, behavior]
+description: >
+  What are the entities, who owns what behavior, and where does identity
+  matter? The domain modeling lens asks whether the code reflects the
+  problem domain clearly — whether a domain expert could recognize their
+  concepts in your code. Surfaces god objects, anemic models, misplaced
+  behavior, and confusion between things that have identity (entities) and
+  things that are just values.
+
+guiding_questions:
+  - Can a domain expert read this code and recognize the business concepts?
+  - Where does behavior live — with the data it operates on, or scattered elsewhere?
+  - Which things have identity (matters which one) vs. which are values (only the content matters)?
+  - Are there objects with too many responsibilities — god objects doing everything?
+  - Are there objects that are just data bags with no behavior (anemic model)?
+  - Where is domain logic leaking into infrastructure code (controllers, serializers, handlers)?
+
+required_fields:
+  entity_map:
+    description: Key domain entities, their responsibilities, and whether they're well-bounded
+    hint: "Order: manages line items, calculates totals, tracks status. User: handles auth AND preferences AND notifications (too many responsibilities). Invoice: data bag with no behavior."
+  behavior_placement:
+    description: Where domain logic lives — with the data or scattered?
+    hint: "Discount calculation in the controller instead of on Order. Validation in the serializer instead of on the entity. Status transitions in a utility function instead of on the model."
+  identity_vs_value:
+    description: Which objects need identity tracking and which are interchangeable values
+    hint: "Order needs identity (specific order matters). Money is a value (any $10 is the same). Address could be either — currently treated as entity but should be value."
+  domain_leakage:
+    description: Where business rules have leaked into infrastructure layers
+    hint: "Tax calculation in the API controller. Discount eligibility in the database query. Status transition rules in the UI component."
+
+related_models:
+  - id: separation-of-concerns
+    reason: "Domain logic should be separated from infrastructure"
+  - id: contract-boundaries
+    reason: "Entity interfaces are contracts"
+  - id: modularity
+    reason: "Entities suggest module boundaries"
+
+counterbalances:
+  - id: functional
+    tension: "Not everything is an entity with lifecycle — some problems are better understood as stateless data transformations"

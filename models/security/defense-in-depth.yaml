@@ -1,6 +1,6 @@
 id: defense-in-depth
 name: Defense in Depth
-category: security
+categories: [security, reliability]
 tags: [layers, redundancy, controls, resilience]
 description: >
   Layer multiple independent security controls so that no single

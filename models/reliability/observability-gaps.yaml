@@ -1,0 +1,44 @@
+id: observability-gaps
+name: Observability Gaps
+categories: [reliability, troubleshooting]
+tags: [observability, monitoring, blind-spots, logging, tracing]
+description: >
+  What can't you see about this system right now? Observability is the
+  ability to understand internal state from external outputs. The
+  dangerous gap is between "nothing is alerting" and "everything is fine."
+  Map what's visible, what's invisible, and what you'd wish you could see
+  during the next incident.
+
+guiding_questions:
+  - If this system broke right now, how would you know?
+  - What questions can you answer from current metrics, logs, and traces?
+  - What questions can't you answer?
+  - Are you measuring symptoms (errors, latency) or causes (queue depth, connection pool usage)?
+  - Where are you relying on absence of alerts rather than presence of health signals?
+  - Can you trace a single request end-to-end through the system?
+
+required_fields:
+  observable_signals:
+    description: What you can currently see — metrics, logs, traces
+    hint: "HTTP error rates, response latency p50/p99, CPU/memory per pod, application logs in CloudWatch. No distributed tracing."
+  blind_spots:
+    description: What you can't see or can only see after the fact
+    hint: "No visibility into queue depths. Cache hit rates not tracked. Inter-service latency not measured. Database connection pool utilization unknown."
+  symptom_vs_cause:
+    description: Where monitoring detects symptoms but not root causes
+    hint: "We alert on high error rates (symptom) but can't see which downstream dependency caused it (cause). We see high latency but not whether it's DB, cache, or network."
+  incident_readiness:
+    description: Could you diagnose last month's incident from current observability alone?
+    hint: "Last outage was a connection pool exhaustion. We saw errors but couldn't identify pool saturation until we SSH'd into the box. Need connection pool metrics."
+
+related_models:
+  - id: failure-modes
+    reason: "You need to observe the failure modes you've identified"
+  - id: error-propagation
+    reason: "Can you trace error paths through your observability?"
+  - id: operational-complexity
+    reason: "More observability can add operational burden"
+
+counterbalances:
+  - id: kiss
+    tension: "Instrumenting everything creates noise and maintenance burden — what's actually worth watching?"

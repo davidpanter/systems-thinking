@@ -1,6 +1,6 @@
 id: failure-modes
 name: Failure Modes
-category: architecture
+categories: [architecture, reliability, troubleshooting]
 tags: [resilience, cascading, fault-tolerance, risk]
 description: >
   Systematically identify how components can fail and what cascades follow.

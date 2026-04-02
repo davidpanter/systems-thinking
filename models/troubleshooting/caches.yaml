@@ -1,6 +1,6 @@
 id: caches
 name: Caches
-category: troubleshooting
+categories: [troubleshooting, operations]
 tags: [staleness, invalidation, ttl, layers, diagnostic]
 description: >
   Audit all caching layers for invalidation issues and staleness.

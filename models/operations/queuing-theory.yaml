@@ -1,6 +1,6 @@
 id: queuing-theory
 name: Queuing Theory
-category: operations
+categories: [operations, reliability]
 tags: [throughput, latency, waiting, load]
 description: >
   Analyze arrival rates, service rates, wait times, and queue stability.

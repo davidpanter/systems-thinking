@@ -19,3 +19,9 @@ tracks:
   resilience:
     lenses: [failure-modes, blast-radius, idempotency, reversibility]
     focus: "How does it fail? How far does failure spread? Are retries safe? THEN: can we undo things when they go wrong?"
+  data-flow:
+    lenses: [state-ownership, data-transformation-fidelity, contract-boundaries, functional]
+    focus: "Who owns the state, does data survive transformations intact, are contracts explicit? THEN challenge through a functional lens: could this be stateless transformations instead of shared mutable state?"
+  operational-readiness:
+    lenses: [observability-gaps, operational-complexity, graceful-degradation, kiss]
+    focus: "Can you see what's happening, can you operate it, does it degrade gracefully? THEN challenge: is the observability and degradation machinery worth its own complexity?"

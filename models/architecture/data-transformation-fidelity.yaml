@@ -1,0 +1,44 @@
+id: data-transformation-fidelity
+name: Data Transformation Fidelity
+categories: [architecture, operations]
+tags: [data, transformation, pipeline, integrity, mapping]
+description: >
+  Does data arrive intact after all transformations? Trace how data moves
+  and transforms through a pipeline — where it's enriched, filtered,
+  aggregated, serialized, or silently lost. Different from stock-and-flow
+  (accumulation rates) — this is about whether transformations preserve
+  meaning.
+
+guiding_questions:
+  - What transformations does data undergo from source to destination?
+  - Where could precision, context, or fields be silently lost?
+  - Are transformations reversible or lossy?
+  - Where are implicit type coercions or format conversions?
+  - Do transformations compose correctly, or does order matter in subtle ways?
+  - Where could encoding issues (unicode, timezone, null handling) corrupt data?
+
+required_fields:
+  transformation_chain:
+    description: Ordered sequence of transformations from source to destination
+    hint: "User input → validation → normalize → enrich with geo data → serialize to JSON → publish to queue → deserialize → store in DB."
+  lossy_steps:
+    description: Where data is irreversibly reduced or dropped
+    hint: "Truncating description to 255 chars. Rounding currency to 2 decimal places. Dropping unknown fields during deserialization."
+  fidelity_risks:
+    description: Where meaning could be silently corrupted — coercions, truncation, encoding
+    hint: "Timezone stripped during JSON serialization (dates become ambiguous). Unicode normalization changes user-entered text. Null vs empty string conflated."
+  round_trip_analysis:
+    description: Can data survive a round-trip through the pipeline intact?
+    hint: "Export → import loses custom fields. API response → re-submit changes date format. DB → CSV → DB loses precision on decimals."
+
+related_models:
+  - id: state-ownership
+    reason: "Who owns the canonical form of this data?"
+  - id: contract-boundaries
+    reason: "Each transformation step has input/output contracts"
+  - id: source-sink
+    reason: "Data originates at sources and arrives at sinks — transformations happen in between"
+
+counterbalances:
+  - id: occams-razor
+    tension: "Not every pipeline needs formal schema validation at each step — where is corruption actually likely?"

@@ -1,6 +1,6 @@
 id: blast-radius
 name: Blast Radius
-category: architecture
+categories: [architecture, reliability]
 tags: [failure, isolation, risk, containment]
 description: >
   How much of the system is affected when something goes wrong? A small

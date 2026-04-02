@@ -1,6 +1,6 @@
 id: attack-surface
 name: Attack Surface
-category: security
+categories: [security, architecture]
 tags: [exposure, endpoints, minimization, risk]
 description: >
   Reason about a system from the perspective of its attack surface —

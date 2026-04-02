@@ -1,6 +1,6 @@
 id: trust-boundaries
 name: Trust Boundaries
-category: security
+categories: [security, architecture]
 tags: [validation, boundaries, input, untrusted]
 description: >
   Identify where trusted meets untrusted in the system. Every trust

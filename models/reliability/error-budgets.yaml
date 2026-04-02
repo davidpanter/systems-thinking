@@ -1,0 +1,44 @@
+id: error-budgets
+name: Error Budgets
+categories: [reliability, operations]
+tags: [reliability, SLO, budget, velocity, tradeoffs]
+description: >
+  How much unreliability can you afford, and where do you spend it? Frames
+  reliability as a finite resource — not "maximize uptime" but "what level
+  of failure is acceptable and how do we allocate it?" Shifts the
+  conversation from zero-defect thinking to explicit trade-offs between
+  velocity and stability.
+
+guiding_questions:
+  - What's the actual reliability requirement — who suffers at what failure rate?
+  - How much error budget do you have (e.g., 99.9% = 8.7 hours/year of downtime)?
+  - Where is the error budget being spent today — deploys, infrastructure, dependencies?
+  - Are you underspending (moving too slowly) or overspending (too many incidents)?
+  - Which components need tight budgets and which can tolerate more failure?
+  - Does the team know when the budget is nearly exhausted?
+
+required_fields:
+  reliability_requirements:
+    description: Who needs what level of reliability, and why
+    hint: "Payment processing: 99.99% (financial loss per minute of downtime). Dashboard: 99.9% (annoying but not critical). Batch reports: 99% (can retry next day)."
+  budget_allocation:
+    description: Where the error budget is currently being spent
+    hint: "60% on deploy-related incidents, 25% on infrastructure (cloud provider), 15% on dependency failures. Deploys are the biggest consumer."
+  velocity_tradeoff:
+    description: What the team could ship faster if reliability requirements were relaxed, or vice versa
+    hint: "If dashboard SLO relaxed to 99.5%, we could deploy 3x more often without risk. If payment SLO tightened to 99.999%, we'd need a deploy freeze process."
+  budget_signals:
+    description: How the team knows when budget is running low
+    hint: "Automated SLO burn rate alert at 50% consumed. Weekly SLO review in team standup. No signal currently — we find out after the fact."
+
+related_models:
+  - id: margin-of-safety
+    reason: "Error budget is a formalized margin of safety"
+  - id: graceful-degradation
+    reason: "What to sacrifice when error budget is spent"
+  - id: constraints
+    reason: "Reliability can be the binding constraint on velocity"
+
+counterbalances:
+  - id: inversion
+    tension: "What if your SLO is wrong? What if users actually tolerate more failure than you think, or far less?"

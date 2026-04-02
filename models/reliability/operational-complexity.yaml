@@ -1,0 +1,44 @@
+id: operational-complexity
+name: Operational Complexity
+categories: [reliability, operations]
+tags: [operations, complexity, cognitive-load, runbooks, toil]
+description: >
+  How hard is this system to run day-to-day? Operational complexity is the
+  burden on the humans who keep the system alive — the things that don't
+  show up in architecture diagrams or code reviews. A system that's
+  elegant to build but miserable to operate has shifted complexity, not
+  reduced it.
+
+guiding_questions:
+  - How many things must an operator hold in their head to diagnose a problem?
+  - How many manual steps are required for routine operations (deploys, rollbacks, scaling)?
+  - What tribal knowledge exists that isn't documented or automated?
+  - How many different dashboards, log sources, and tools must be consulted during an incident?
+  - What's the on-call burden — how often do people get paged, and for what?
+  - Could a new team member operate this system after reading the docs?
+
+required_fields:
+  operational_burden:
+    description: Routine tasks that require human attention
+    hint: "Manual DB migrations every release. Certificate rotation every 90 days. Cache warming after deploys. Log rotation on legacy boxes."
+  tribal_knowledge:
+    description: Undocumented knowledge needed to operate the system
+    hint: "Only Sarah knows how to restart the payment reconciliation job. The deploy script silently fails if run before 6am UTC. Node 3 needs manual restart after DB failover."
+  incident_complexity:
+    description: How many systems/tools/steps involved in typical incident response
+    hint: "Typical incident: check PagerDuty → Grafana dashboard → Kibana logs → SSH to box → check process → restart. 6 tools, 15 minutes before you understand the problem."
+  automation_gaps:
+    description: Manual operations that could be automated but aren't
+    hint: "Scaling is manual kubectl commands. Rollback requires running 3 scripts in order. Health checks exist but don't auto-remediate."
+
+related_models:
+  - id: observability-gaps
+    reason: "Poor observability increases operational complexity"
+  - id: kiss
+    reason: "Operational complexity is a form of accidental complexity"
+  - id: leverage-points
+    reason: "Automating the highest-burden operations has outsized impact"
+
+counterbalances:
+  - id: build-vs-buy
+    tension: "Operational tooling costs time to build — is the burden large enough to justify the investment?"

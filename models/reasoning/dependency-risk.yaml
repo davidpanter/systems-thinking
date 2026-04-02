@@ -1,0 +1,43 @@
+id: dependency-risk
+name: Dependency Risk
+categories: [reasoning, security]
+tags: [dependencies, supply-chain, risk, resilience, third-party]
+description: >
+  What happens when something you depend on breaks? Every dependency is a
+  bet that the maintainer's priorities will continue to align with yours.
+  Analyze your dependency chain for single points of failure, abandonment
+  risk, and blast radius if a dependency disappears.
+
+guiding_questions:
+  - Which dependencies are critical (system fails without them) vs. convenient (degraded without them)?
+  - What happens if a key dependency is abandoned, acquired, or ships a breaking change?
+  - Are there dependencies with a single maintainer or unclear funding?
+  - How deep is your transitive dependency tree — do you know what you're actually running?
+  - Could you replace this dependency in an emergency?
+  - Is the dependency's release cadence and stability compatible with yours?
+
+required_fields:
+  dependency_map:
+    description: Critical vs. convenient dependencies
+    hint: "Critical: database driver, auth library, payment SDK. Convenient: date formatting, logging facade, test utilities."
+  single_points_of_failure:
+    description: Dependencies with no alternative
+    hint: "Payment gateway — only integration, no fallback. Proprietary data format — only one parser exists."
+  abandonment_risk:
+    description: Dependencies with maintainer or funding risk
+    hint: "Core utility maintained by one person, last commit 8 months ago. SDK tied to startup with no revenue model."
+  replacement_cost:
+    description: Effort to swap out each critical dependency
+    hint: "Database driver: 2 weeks (standard interface). Payment SDK: 2 months (deeply integrated, custom flows). Auth library: 1 month (abstracted behind interface)."
+
+related_models:
+  - id: build-vs-buy
+    reason: "Buying creates dependencies — this model evaluates the risk"
+  - id: blast-radius
+    reason: "Dependency failure has a blast radius"
+  - id: attack-surface
+    reason: "Each dependency expands the attack surface"
+
+counterbalances:
+  - id: kiss
+    tension: "Vendoring everything or writing everything in-house to avoid dependency risk can be worse than the risk itself"

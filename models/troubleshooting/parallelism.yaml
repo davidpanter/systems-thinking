@@ -1,6 +1,6 @@
 id: parallelism
 name: Parallelism
-category: troubleshooting
+categories: [troubleshooting, architecture]
 tags: [concurrency, deadlock, race-condition, diagnostic]
 description: >
   Examine the system through the lens of parallel and concurrent execution.

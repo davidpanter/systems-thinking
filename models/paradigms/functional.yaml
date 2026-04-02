@@ -1,0 +1,44 @@
+id: functional
+name: Functional Lens
+categories: [paradigms, architecture]
+tags: [functional, immutability, side-effects, composition, purity]
+description: >
+  Where is state being mutated, and where are side effects hiding? The
+  functional lens asks you to trace data transformations and separate pure
+  logic from impure effects. Applied to any codebase — not just functional
+  ones — it reveals hidden mutation, tangled side effects, and composition
+  opportunities that are invisible from within the dominant paradigm.
+
+guiding_questions:
+  - Where is state mutated, and could those mutations be replaced with transformations that return new values?
+  - Where are side effects (I/O, logging, database calls) tangled with business logic?
+  - Can you trace data from input to output without following mutable state through multiple objects?
+  - Are there functions that are hard to test because they depend on external state?
+  - Where could operations compose (output of one feeds input of next) but currently don't?
+  - Are there places where shared mutable state forces ordering constraints that pure functions would eliminate?
+
+required_fields:
+  mutation_map:
+    description: Where state is mutated and whether mutation is essential or incidental
+    hint: "Essential: DB writes, file system changes. Incidental: accumulator variable in loop (could be reduce), instance variable updated across methods (could be return value)."
+  side_effect_boundaries:
+    description: Where side effects live — at the edges or buried in the core?
+    hint: "DB calls inside business logic functions. Logging mixed into calculation methods. HTTP calls in domain model constructors. Ideally: effects at edges, pure logic in core."
+  composition_opportunities:
+    description: Logic that could be expressed as composable transformations
+    hint: "Validation → normalization → enrichment currently done in one big method. Could be pipeline: validate(input) |> normalize |> enrich. Each step independently testable."
+  testability_assessment:
+    description: What's hard to test because of impurity, and what would isolation gain you?
+    hint: "Price calculation needs a DB connection to test because it reads tax rates inline. Extract pure calc(price, taxRate) → testable without DB, mock only at boundary."
+
+related_models:
+  - id: state-ownership
+    reason: "Functional lens clarifies ownership by minimizing shared mutation"
+  - id: error-propagation
+    reason: "Pure functions make error paths explicit through return types"
+  - id: data-transformation-fidelity
+    reason: "Functional composition is how you build reliable transformation chains"
+
+counterbalances:
+  - id: domain-modeling
+    tension: "Not everything is a data transformation — some problems are better understood as entities with identity, behavior, and lifecycle"

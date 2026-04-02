@@ -1,0 +1,43 @@
+id: error-propagation
+name: Error Propagation
+categories: [architecture, reliability, troubleshooting]
+tags: [errors, propagation, cascade, handling, resilience]
+description: >
+  How do errors travel through the system? Where are they caught,
+  transformed, swallowed, or amplified? Different from failure-modes
+  (which asks what fails) — this traces the journey of a failure signal
+  from origin to observable symptom.
+
+guiding_questions:
+  - When an error occurs here, what does the caller see?
+  - Where are errors swallowed silently?
+  - Where do errors transform into something unintelligible?
+  - Do errors cross boundaries with enough context to be actionable?
+  - Where can a small error cascade into a large outage?
+  - Are retry/fallback paths themselves error-prone?
+
+required_fields:
+  error_paths:
+    description: How errors flow from origin to user
+    hint: "DB timeout → ORM exception → generic 500 → user sees 'Something went wrong'. Context lost at ORM layer."
+  swallowed_errors:
+    description: Where errors are caught and silently discarded
+    hint: "Background job catch-all logs to debug level and continues. Cache write failures ignored. Event publish errors swallowed."
+  error_transformation:
+    description: Where error context is lost or mangled
+    hint: "Microservice A returns detailed error, API gateway maps it to generic 502. Stack trace stripped at service boundary."
+  cascade_risks:
+    description: Where a small error amplifies into a large one
+    hint: "Auth service timeout → all requests retry → 3x load on auth → full outage. One bad record → batch job fails → entire import rolled back."
+
+related_models:
+  - id: failure-modes
+    reason: "What fails — this model traces where failure goes next"
+  - id: blast-radius
+    reason: "Error propagation paths determine blast radius"
+  - id: state-ownership
+    reason: "Inconsistent state produces errors that propagate downstream"
+
+counterbalances:
+  - id: occams-razor
+    tension: "Not every error path needs hardening — is the most likely failure mode actually this complex?"

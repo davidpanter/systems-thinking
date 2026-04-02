@@ -1,0 +1,43 @@
+id: state-ownership
+name: State Ownership
+categories: [architecture, reliability, paradigms]
+tags: [state, ownership, mutation, coupling, consistency]
+description: >
+  Who owns this state, and what happens when ownership is unclear? Shared
+  mutable state is the most common source of subtle bugs. Trace where
+  state lives, who reads it, who writes it, and what breaks when it's
+  inconsistent.
+
+guiding_questions:
+  - Where does mutable state live?
+  - Who reads vs. writes it?
+  - Is there a single source of truth or multiple copies?
+  - What happens when copies diverge?
+  - Where is state implicitly shared through globals, caches, or databases?
+  - Could this state be derived instead of stored?
+
+required_fields:
+  state_map:
+    description: Where state lives and who owns it
+    hint: "User session → Redis (owned by auth service). Order totals → DB (owned by checkout). Cart → client localStorage (owned by frontend)."
+  shared_state_risks:
+    description: State accessed by multiple writers
+    hint: "Inventory count updated by checkout, returns, and warehouse sync — last-write-wins race condition."
+  consistency_model:
+    description: How consistency is maintained — locks, events, eventual
+    hint: "Strong consistency via DB transactions for payments. Eventual consistency via events for analytics."
+  derived_vs_stored:
+    description: State that could be computed instead of stored
+    hint: "Order total is stored but could be derived from line items. User 'active' flag is stored but could be derived from last-login timestamp."
+
+related_models:
+  - id: coupling-cohesion
+    reason: "Shared state is hidden coupling between components"
+  - id: error-propagation
+    reason: "Inconsistent state produces errors that propagate downstream"
+  - id: feedback-loops
+    reason: "State changes can create reinforcing loops (cache invalidation storms, retry amplification)"
+
+counterbalances:
+  - id: kiss
+    tension: "Strict state ownership boundaries add indirection — is the isolation worth the complexity?"

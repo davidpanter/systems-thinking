@@ -1,0 +1,43 @@
+id: contract-boundaries
+name: Contract Boundaries
+categories: [architecture, security]
+tags: [contracts, interfaces, API, assumptions, compatibility]
+description: >
+  What's actually promised at this interface, and what's merely assumed?
+  Every boundary between components has an explicit contract (documented
+  API) and an implicit contract (behavior callers depend on but nobody
+  promised). When internals change, implicit contracts break.
+
+guiding_questions:
+  - What does this interface explicitly promise?
+  - What behavior do callers rely on that isn't documented?
+  - What happens if the response format, ordering, or timing changes?
+  - Where are internal implementation details leaking through the interface?
+  - Are error contracts (what errors can be returned) well-defined?
+  - Could this interface change without breaking consumers?
+
+required_fields:
+  explicit_contracts:
+    description: Documented promises — API specs, schemas, SLAs
+    hint: "REST API with OpenAPI spec. Response always includes 'id' and 'status' fields. 99.9% uptime SLA."
+  implicit_contracts:
+    description: Undocumented behavior callers depend on
+    hint: "Results always returned sorted by date (not documented). Error responses include a 'details' field (not in spec). Response time under 200ms (no SLA)."
+  breaking_change_risk:
+    description: What internal changes would break consumers
+    hint: "Changing sort order would break frontend pagination. Removing 'details' from errors would break client error handling."
+  contract_enforcement:
+    description: How contracts are validated — types, tests, schemas, runtime checks
+    hint: "OpenAPI validation in CI. Contract tests between services. No runtime schema validation on responses."
+
+related_models:
+  - id: coupling-cohesion
+    reason: "Implicit contracts are hidden coupling"
+  - id: separation-of-concerns
+    reason: "Good contracts enforce separation between components"
+  - id: trust-boundaries
+    reason: "Contracts define what to trust across boundaries"
+
+counterbalances:
+  - id: kiss
+    tension: "Strict contract enforcement adds overhead — is the formality justified for internal interfaces?"

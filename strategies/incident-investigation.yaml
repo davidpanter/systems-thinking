@@ -20,3 +20,6 @@ tracks:
   reasoning:
     lenses: [occams-razor, hanlons-razor, second-order-thinking]
     focus: "Start simple, assume mistakes not malice, THEN: what if the obvious explanation is a symptom and the real cause is a second-order effect?"
+  observability:
+    lenses: [observability-gaps, error-propagation, back-pressure, operational-complexity]
+    focus: "What can't we see, how did the error travel, was the system overwhelmed? THEN: is our tooling making diagnosis harder than the problem itself?"

@@ -1,6 +1,6 @@
 id: buffers
 name: Buffers & Buffer Sizing
-category: operations
+categories: [operations, reliability]
 tags: [capacity, overflow, starvation, resilience]
 description: >
   Evaluate where buffers exist, whether they are sized correctly, and the

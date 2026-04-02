@@ -1,0 +1,43 @@
+id: build-vs-buy
+name: Build vs. Buy
+categories: [reasoning, operations]
+tags: [decisions, cost, vendor, ownership, tradeoffs]
+description: >
+  What's the true total cost of building versus buying? Both paths have
+  costs people systematically underestimate. Building underestimates
+  maintenance, opportunity cost, and expertise required. Buying
+  underestimates integration cost, vendor lock-in, and customization limits.
+
+guiding_questions:
+  - What's the total cost of building, including maintenance for the next 3 years?
+  - What's the total cost of buying, including integration and customization?
+  - How core is this to our business — is it a differentiator or commodity?
+  - What happens if the vendor goes away, raises prices, or pivots?
+  - How much customization will we actually need?
+  - Do we have the expertise to build and maintain this?
+
+required_fields:
+  build_cost:
+    description: Realistic total cost including maintenance and opportunity cost
+    hint: "6 months to build, 2 engineers ongoing maintenance, delays other roadmap items by a quarter. Team lacks deep expertise in this domain."
+  buy_cost:
+    description: Realistic total cost including integration, customization, and lock-in
+    hint: "$50k/year license. 3 months integration. Limited to vendor's data model. Migration away would take 6 months."
+  core_vs_commodity:
+    description: Is this a differentiator worth investing in, or solved infrastructure?
+    hint: "Auth is commodity — buy it. Recommendation engine is our differentiator — build it. Billing is commodity but our model is unusual — evaluate carefully."
+  exit_cost:
+    description: What it costs to switch if we choose wrong
+    hint: "Switching from vendor A to B: 3 months migration, data export limitations, retraining. Switching from custom to vendor: discard 6 months of work."
+
+related_models:
+  - id: reversibility
+    reason: "How reversible is each path — can you switch later?"
+  - id: dependency-risk
+    reason: "Buying creates a dependency on the vendor"
+  - id: margin-of-safety
+    reason: "Budget margin for whichever path you choose"
+
+counterbalances:
+  - id: constraints
+    tension: "Sometimes the binding constraint (time, money, expertise) makes the decision for you regardless of total-cost analysis"

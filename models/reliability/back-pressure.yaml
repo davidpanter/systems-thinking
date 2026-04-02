@@ -1,0 +1,44 @@
+id: back-pressure
+name: Back Pressure
+categories: [reliability, operations]
+tags: [back-pressure, overload, rate-limiting, stability, capacity]
+description: >
+  When a system is overwhelmed, does it push back or collapse? Systems
+  without back-pressure accept work faster than they can process it,
+  leading to unbounded queue growth, resource exhaustion, and cascading
+  failure. Back-pressure propagates "slow down" signals upstream before
+  collapse.
+
+guiding_questions:
+  - What happens when this system receives 10x normal load?
+  - Where are there unbounded queues or buffers that can grow without limit?
+  - Does the system signal "slow down" to callers, or silently accept work until it dies?
+  - What's the failure mode under overload — graceful rejection or cascading collapse?
+  - Where are timeouts missing or set too high?
+  - Can a single misbehaving caller overwhelm the system for everyone?
+
+required_fields:
+  overload_behavior:
+    description: What actually happens today under extreme load
+    hint: "At 5x load: response times degrade linearly. At 10x: OOM kill, full outage, 5-minute recovery. No graceful rejection."
+  unbounded_resources:
+    description: Queues, buffers, connection pools that can grow without limit
+    hint: "In-memory job queue has no max size. Thread pool grows unbounded. Retry queue accumulates during outage with no cap."
+  pressure_signals:
+    description: Where and how the system signals callers to slow down
+    hint: "API returns 429 with Retry-After header at 80% capacity. Queue publishes backlog metric but no consumer uses it. No back-pressure on internal service calls."
+  isolation_gaps:
+    description: Where one caller's load can affect others
+    hint: "All tenants share one connection pool — heavy tenant starves others. No per-client rate limiting on internal APIs. Batch jobs compete with real-time traffic."
+
+related_models:
+  - id: queuing-theory
+    reason: "Back-pressure is what happens when queuing assumptions break"
+  - id: graceful-degradation
+    reason: "Back-pressure enables graceful degradation under load"
+  - id: buffers
+    reason: "Buffers without back-pressure become unbounded queues"
+
+counterbalances:
+  - id: margin-of-safety
+    tension: "Over-provisioning can be simpler than back-pressure mechanisms — is the system likely to actually face overload?"

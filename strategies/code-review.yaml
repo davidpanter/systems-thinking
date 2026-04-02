@@ -17,3 +17,6 @@ tracks:
   reasoning:
     lenses: [inversion, second-order-thinking, occams-razor]
     focus: "How could this fail? What are the downstream consequences? THEN: are we overthinking this — is the simplest explanation enough?"
+  data-and-state:
+    lenses: [state-ownership, error-propagation, contract-boundaries, occams-razor]
+    focus: "Who owns this state, how do errors travel, are contracts explicit? THEN: is the analysis revealing real risk, or are we over-scrutinizing stable code?"

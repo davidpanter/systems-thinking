@@ -1,0 +1,45 @@
+id: event-driven
+name: Event-Driven Lens
+categories: [paradigms, architecture, operations]
+tags: [events, temporal, ordering, audit, decoupling, reactive]
+description: >
+  What happened, in what order, and who cares? The event-driven lens
+  introduces the time dimension that other paradigms largely ignore. It
+  asks you to think about the system as a sequence of things that happened
+  rather than a snapshot of current state. Surfaces temporal coupling,
+  hidden ordering dependencies, and places where you need audit trails or
+  replay-ability.
+
+guiding_questions:
+  - What are the significant things that happen in this system — the events?
+  - Where does the order of operations matter, and is that ordering guaranteed?
+  - Where are components coupled by timing rather than by data or interface?
+  - If you replayed all events from the beginning, would you get the same state?
+  - Where would an audit trail (who did what when) add value?
+  - Are there places where the current state is insufficient — where you need to know how you got here?
+
+required_fields:
+  event_catalog:
+    description: Significant events in the system and who produces/consumes them
+    hint: "OrderPlaced (checkout → fulfillment, billing, notifications). UserRegistered (auth → onboarding, analytics). PaymentFailed (billing → checkout, support alerts)."
+  temporal_coupling:
+    description: Where components depend on timing or ordering that isn't guaranteed
+    hint: "Notification sent before order confirmed (race condition). Analytics event processed before user record created (missing foreign key). Cache warmed after deploy but before traffic shifted (gap)."
+  replay_analysis:
+    description: Could the current state be reconstructed from events? Would that be valuable?
+    hint: "Order history: yes, events fully describe state transitions. User preferences: no, only current state stored, change history lost. Inventory: partially, adjustments logged but not initial stock."
+  audit_gaps:
+    description: Where you need to know what happened but currently only know current state
+    hint: "Who changed this config and when? Why was this order cancelled — user request or system timeout? When did this permission get granted?"
+
+related_models:
+  - id: state-ownership
+    reason: "Events are an alternative to shared state — communicate by events instead of sharing data"
+  - id: back-pressure
+    reason: "Event streams need back-pressure when consumers fall behind"
+  - id: data-transformation-fidelity
+    reason: "Events flowing through processors are a transformation chain"
+
+counterbalances:
+  - id: domain-modeling
+    tension: "Events can fragment domain logic across handlers — sometimes a coherent entity with clear methods is simpler than a stream of events"

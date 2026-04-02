@@ -1,0 +1,43 @@
+id: graceful-degradation
+name: Graceful Degradation
+categories: [reliability, architecture]
+tags: [degradation, resilience, priorities, fallback, partial-failure]
+description: >
+  When resources become scarce or components fail, what does the system
+  sacrifice first? Every system has an implicit priority hierarchy — this
+  model makes it explicit. The alternative to graceful degradation is
+  ungraceful degradation, where the system decides for you (usually badly).
+
+guiding_questions:
+  - What are the system's core functions vs. nice-to-have features?
+  - If the database is slow, what still works?
+  - If a downstream service is down, what degrades vs. what breaks entirely?
+  - Is there a defined hierarchy — what sheds first, second, third?
+  - Do users experience degradation or a cliff edge (works then completely broken)?
+  - Are degradation paths tested, or are they theoretical?
+
+required_fields:
+  priority_hierarchy:
+    description: What's essential, important, and expendable under pressure
+    hint: "Essential: user can log in and view data. Important: search works, notifications deliver. Expendable: recommendations, analytics tracking, non-critical background jobs."
+  degradation_modes:
+    description: For each failure scenario, what degrades and how
+    hint: "Cache down → slower responses but correct data. Search service down → search disabled, browse still works. Payment provider slow → queue orders, confirm async."
+  cliff_edges:
+    description: Where the system goes from working to completely broken with no middle ground
+    hint: "Auth service down → nothing works (no graceful fallback). DB connection pool full → all requests fail simultaneously. No partial failure mode for checkout."
+  tested_vs_theoretical:
+    description: Which degradation paths have been tested under realistic conditions
+    hint: "Cache-down mode tested in staging monthly. Search-disabled fallback never tested. Payment queueing exists in code but never exercised."
+
+related_models:
+  - id: failure-modes
+    reason: "Degradation is the response to failure modes"
+  - id: blast-radius
+    reason: "Graceful degradation limits effective blast radius"
+  - id: error-budgets
+    reason: "Degradation is how you spend error budget deliberately"
+
+counterbalances:
+  - id: kiss
+    tension: "Degradation paths are code paths that rarely run and are hard to test — is partial functionality worth the complexity vs. fast recovery?"

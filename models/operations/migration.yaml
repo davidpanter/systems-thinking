@@ -1,0 +1,43 @@
+id: migration
+name: Migration
+categories: [operations, architecture]
+tags: [migration, evolution, transition, strangler-fig, rollback]
+description: >
+  How do you get from state A to state B safely? Every migration has a
+  spectrum from big-bang (fast, risky) to incremental (slow, safe).
+  Analyze the intermediate states, rollback strategy, and what happens
+  when you're running both old and new simultaneously.
+
+guiding_questions:
+  - Can this be done incrementally, or must it be all-at-once?
+  - What does the system look like during the transition — is the intermediate state safe?
+  - What's the rollback plan at each stage?
+  - How do you verify the new state is correct before cutting over?
+  - Is there a point of no return — when does rollback become impossible?
+  - How long will old and new coexist, and what's the cost of dual-running?
+
+required_fields:
+  migration_strategy:
+    description: Big-bang, strangler fig, parallel run, expand-contract — and why
+    hint: "Strangler fig — route new traffic to new service, old traffic stays until migrated. Chosen because rollback is just routing change."
+  intermediate_states:
+    description: What the system looks like mid-migration
+    hint: "During migration: both old and new tables exist, writes go to both, reads prefer new. Risk: data divergence if sync fails."
+  rollback_plan:
+    description: How to reverse at each stage, and when reversal becomes impossible
+    hint: "Before cutover: revert routing. After cutover but before decommission: restore from backup. After decommission: cannot rollback."
+  verification_approach:
+    description: How to confirm the migration succeeded before decommissioning the old
+    hint: "Shadow traffic comparison for 2 weeks. Row-by-row data validation script. Canary at 1% traffic with error rate monitoring."
+
+related_models:
+  - id: reversibility
+    reason: "Rollback is reversibility applied to migration"
+  - id: blast-radius
+    reason: "Migration failure has a blast radius — how much breaks if it goes wrong?"
+  - id: constraints
+    reason: "The binding constraint often determines migration strategy — time, risk tolerance, team capacity"
+
+counterbalances:
+  - id: occams-razor
+    tension: "Is incremental migration worth the dual-running complexity, or would a well-planned cutover be simpler and safer?"

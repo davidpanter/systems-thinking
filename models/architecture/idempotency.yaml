@@ -1,6 +1,6 @@
 id: idempotency
 name: Idempotency
-category: architecture
+categories: [architecture, reliability]
 tags: [reliability, retries, safety, design]
 description: >
   An operation is idempotent if performing it multiple times produces the
