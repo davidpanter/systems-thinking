@@ -4,9 +4,8 @@ import type {
   Session,
   LensApplication,
   LensSuggestion,
-  CrossReference,
 } from "./types.js";
-import { suggestLenses, suggestLensesWithGraph, findCrossReferences, getRelatedSuggestions, getCounterbalanceSuggestions, computeClusters } from "./matcher.js";
+import { suggestLenses, getRelatedSuggestions, getCounterbalanceSuggestions, computeClusters } from "./matcher.js";
 import type { CounterbalanceSuggestion, ModelCluster } from "./matcher.js";
 
 export class SystemsThinkingServer {
@@ -167,7 +166,11 @@ export class SystemsThinkingServer {
     guidingQuestions?: string[];
     requiredFields?: ModelDefinition["required_fields"];
     missingFields?: string[];
-    crossReferences?: CrossReference[];
+    priorFindings?: Array<{
+      modelId: string;
+      analysis: string;
+      findings: Record<string, string>;
+    }>;
     sessionSummary?: { problem: string; lensesApplied: string[] };
     analysisDepth?: string;
     nextSteps?: {
@@ -212,9 +215,12 @@ export class SystemsThinkingServer {
     };
     session.lenses.push(lensApp);
 
-    // Cross-references from prior lenses (excluding the one just applied)
-    const priorLenses = session.lenses.slice(0, -1);
-    const crossReferences = findCrossReferences(priorLenses, model);
+    // Prior findings for the LLM to judge relevance
+    const priorFindings = session.lenses.slice(0, -1).map((l) => ({
+      modelId: l.modelId,
+      analysis: l.analysis,
+      findings: l.findings,
+    }));
 
     // Suggested next lenses: counterbalances + related + tag matching
     const appliedIds = session.lenses.map((l) => l.modelId);
@@ -253,7 +259,7 @@ export class SystemsThinkingServer {
       guidingQuestions: model.guiding_questions,
       requiredFields: model.required_fields,
       missingFields,
-      crossReferences,
+      priorFindings,
       sessionSummary: {
         problem: session.problem,
         lensesApplied: session.lenses.map((l) => l.modelId),
@@ -283,10 +289,6 @@ export class SystemsThinkingServer {
       observations?: string;
       confidence?: string;
     }>;
-    connectionsFound?: Array<{
-      between: [string, string];
-      connection: string;
-    }>;
     synthesis?: string;
     recommendations?: string[];
     contradictions?: string;
@@ -310,25 +312,6 @@ export class SystemsThinkingServer {
         ? "No lenses applied yet — synthesis will be based on the problem statement alone."
         : undefined;
 
-    // Find cross-lens connections: for each lens pair, find cross-references
-    const connectionsFound: Array<{
-      between: [string, string];
-      connection: string;
-    }> = [];
-    for (let i = 0; i < session.lenses.length; i++) {
-      for (let j = i + 1; j < session.lenses.length; j++) {
-        const laterModel = this.modelMap.get(session.lenses[j].modelId);
-        if (!laterModel) continue;
-        const refs = findCrossReferences([session.lenses[i]], laterModel);
-        for (const ref of refs) {
-          connectionsFound.push({
-            between: [session.lenses[i].modelId, session.lenses[j].modelId],
-            connection: `${ref.fromLens}/${ref.findingKey} ↔ ${session.lenses[j].modelId}: ${ref.relevance}`,
-          });
-        }
-      }
-    }
-
     // Suggest lenses that might fill gaps
     const appliedIds = session.lenses.map((l) => l.modelId);
     const searchText = [session.problem, session.context, input.gaps]
@@ -351,7 +334,6 @@ export class SystemsThinkingServer {
         observations: l.observations,
         confidence: l.confidence,
       })),
-      connectionsFound,
       synthesis: input.synthesis,
       recommendations: input.recommendations,
       contradictions: input.contradictions,

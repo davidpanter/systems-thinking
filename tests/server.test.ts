@@ -254,7 +254,7 @@ describe("SystemsThinkingServer", () => {
       expect(r3.analysisDepth).toContain("thorough");
     });
 
-    it("returns crossReferences from prior lenses", () => {
+    it("returns prior findings from earlier lenses", () => {
       const { sessionId } = server.startAnalysis({ problem: "test" });
       server.applyLens({
         sessionId,
@@ -271,7 +271,21 @@ describe("SystemsThinkingServer", () => {
         analysis: "Analyzing queues",
         findings: { arrival_rate: "500 req/s" },
       });
-      expect(result.crossReferences).toBeDefined();
+      expect(result.priorFindings).toBeDefined();
+      expect(result.priorFindings).toHaveLength(1);
+      expect(result.priorFindings![0].modelId).toBe("constraints");
+      expect(result.priorFindings![0].findings.binding_constraint).toContain("arrival rate");
+    });
+
+    it("returns empty priorFindings on first lens", () => {
+      const { sessionId } = server.startAnalysis({ problem: "test" });
+      const result = server.applyLens({
+        sessionId,
+        modelId: "constraints",
+        analysis: "First lens",
+        findings: { binding_constraint: "DB", exploitation: "Pooling" },
+      });
+      expect(result.priorFindings).toEqual([]);
     });
   });
 
@@ -303,7 +317,6 @@ describe("SystemsThinkingServer", () => {
       expect(result.problem).toBe("Slow system");
       expect(result.lensesApplied).toHaveLength(2);
       expect(result.recommendations).toHaveLength(2);
-      expect(result.connectionsFound).toBeDefined();
     });
 
     it("warns when synthesizing with zero lenses", () => {

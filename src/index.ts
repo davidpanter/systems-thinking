@@ -149,7 +149,7 @@ Example call structure:
 
 Available models: ${models.map((m) => `${m.id} (${m.name})`).join(", ")}
 
-IMPORTANT: Do NOT stop after one lens. Apply 2-4 lenses per session to get genuine multi-perspective insight. After each application, review the suggestedNextLenses and crossReferences in the response — they point to complementary perspectives and connections to prior findings. When you've built enough perspective, call synthesize to integrate across lenses.
+IMPORTANT: Do NOT stop after one lens. Apply 2-4 lenses per session to get genuine multi-perspective insight. The response includes prior findings from earlier lenses — use these to identify connections and build on previous analysis. When you've built enough perspective, call synthesize to integrate across lenses.
 
 Can be called multiple times per session. Allowed after synthesize.`,
   inputSchema: ApplyLensInput,
@@ -166,10 +166,10 @@ Can be called multiple times per session. Allowed after synthesize.`,
           chalk.yellow(`   Missing fields: ${result.missingFields.join(", ")}`)
         );
       }
-      if (result.crossReferences && result.crossReferences.length > 0) {
+      if (result.priorFindings && result.priorFindings.length > 0) {
         console.error(
           chalk.cyan(
-            `   Cross-refs: ${result.crossReferences.map((r) => `${r.fromLens}/${r.findingKey}`).join(", ")}`
+            `   Prior lenses: ${result.priorFindings.map((p) => p.modelId).join(", ")}`
           )
         );
       }
