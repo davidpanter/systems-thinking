@@ -6,7 +6,7 @@ import type {
   LensSuggestion,
   CrossReference,
 } from "./types.js";
-import { suggestLenses, findCrossReferences, getRelatedSuggestions, getCounterbalanceSuggestions } from "./matcher.js";
+import { suggestLenses, suggestLensesWithGraph, findCrossReferences, getRelatedSuggestions, getCounterbalanceSuggestions } from "./matcher.js";
 import type { CounterbalanceSuggestion } from "./matcher.js";
 
 export class SystemsThinkingServer {
@@ -49,7 +49,7 @@ export class SystemsThinkingServer {
       .filter(Boolean)
       .join(" ");
 
-    const suggested = suggestLenses(searchText, this.models, []);
+    const suggested = suggestLensesWithGraph(searchText, this.models, []);
 
     // Build a recommended sequence of 3 from top suggestions
     // If a top suggestion has a counterbalance, slot it in as the second lens

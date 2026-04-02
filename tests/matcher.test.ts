@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { suggestLenses, findCrossReferences, tokenize } from "../src/matcher.js";
+import { suggestLenses, findCrossReferences, tokenize, suggestLensesWithGraph } from "../src/matcher.js";
 import type { ModelDefinition, LensApplication } from "../src/types.js";
 
 const mockModels: ModelDefinition[] = [
@@ -221,5 +221,101 @@ describe("findCrossReferences", () => {
     for (let i = 1; i < refs.length; i++) {
       expect(refs[i - 1].score).toBeGreaterThanOrEqual(refs[i].score);
     }
+  });
+});
+
+describe("suggestLensesWithGraph", () => {
+  // A cluster: modularity → coupling-cohesion → separation-of-concerns
+  // An isolated model: queuing-theory (no connections to the cluster)
+  const graphModels: ModelDefinition[] = [
+    {
+      id: "modularity",
+      name: "Modularity",
+      category: "architecture",
+      tags: ["modules", "decomposition", "boundaries"],
+      description: "Evaluate system decomposition into independent interchangeable units",
+      guiding_questions: ["What are the modules?"],
+      required_fields: { modules: { description: "Modules", hint: "List them" } },
+      related_models: [
+        { id: "coupling-cohesion", reason: "Measure coupling between modules" },
+        { id: "separation-of-concerns", reason: "Verify separation" },
+      ],
+      counterbalances: [],
+    },
+    {
+      id: "coupling-cohesion",
+      name: "Coupling & Cohesion",
+      category: "architecture",
+      tags: ["coupling", "cohesion", "dependencies", "modules"],
+      description: "Measure module interdependency and internal focus",
+      guiding_questions: ["How coupled are the modules?"],
+      required_fields: { coupling: { description: "Coupling", hint: "Measure it" } },
+      related_models: [
+        { id: "modularity", reason: "Module boundaries define coupling" },
+      ],
+      counterbalances: [],
+    },
+    {
+      id: "separation-of-concerns",
+      name: "Separation of Concerns",
+      category: "architecture",
+      tags: ["separation", "concerns", "isolation", "boundaries"],
+      description: "Ensure different aspects of behavior are isolated in separate units",
+      guiding_questions: ["Are concerns separated?"],
+      required_fields: { concerns: { description: "Concerns", hint: "List them" } },
+      related_models: [
+        { id: "modularity", reason: "Modules enforce separation" },
+      ],
+      counterbalances: [],
+    },
+    {
+      id: "queuing-theory",
+      name: "Queuing Theory",
+      category: "operations",
+      tags: ["throughput", "latency", "waiting", "modules"],
+      // "modules" tag gives it some tag overlap with the problem, but it's isolated in the graph
+      description: "Analyze arrival rates service rates wait times queue stability",
+      guiding_questions: ["Where do requests queue?"],
+      required_fields: { rate: { description: "Rate", hint: "Measure it" } },
+      related_models: [],
+      counterbalances: [],
+    },
+  ];
+
+  it("boosts models that are part of a related cluster", () => {
+    // Problem text matches "modules" tag — present in modularity, coupling-cohesion, AND queuing-theory
+    // But modularity and coupling-cohesion form a graph cluster, so they should rank higher
+    const results = suggestLensesWithGraph("modules boundaries decomposition", graphModels, []);
+    const ids = results.map((r) => r.modelId);
+
+    // modularity should be top (best tag match + graph cluster)
+    expect(ids[0]).toBe("modularity");
+
+    // coupling-cohesion and separation-of-concerns should appear (graph neighbors of top match)
+    expect(ids).toContain("coupling-cohesion");
+    expect(ids).toContain("separation-of-concerns");
+  });
+
+  it("surfaces graph neighbors that have zero tag score", () => {
+    // "decomposition boundaries" matches modularity strongly, but not separation-of-concerns directly
+    // Graph walking should still surface separation-of-concerns as a neighbor
+    const results = suggestLensesWithGraph("decomposition boundaries", graphModels, []);
+    const ids = results.map((r) => r.modelId);
+    expect(ids).toContain("separation-of-concerns");
+  });
+
+  it("excludes already-applied lenses from graph results", () => {
+    const results = suggestLensesWithGraph("modules boundaries", graphModels, ["modularity"]);
+    const ids = results.map((r) => r.modelId);
+    expect(ids).not.toContain("modularity");
+  });
+
+  it("labels graph-discovered models with their relationship reason", () => {
+    // Use a problem that doesn't tag-match separation-of-concerns at all
+    const results = suggestLensesWithGraph("modules decomposition", graphModels, []);
+    const soc = results.find((r) => r.modelId === "separation-of-concerns");
+    // Discovered purely via graph (no tag match), reason should start with "Related to"
+    expect(soc).toBeDefined();
+    expect(soc!.reason).toContain("Related to");
   });
 });
