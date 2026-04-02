@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { loadModelsFromDirectory, loadModels } from "../src/loader.js";
+import { loadModelsFromDirectory, loadModels, validateStrategyReferences } from "../src/loader.js";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -50,5 +50,68 @@ describe("loadModels (overlay)", () => {
     const testModel = models.find((m) => m.id === "test-model")!;
     expect(testModel.name).toBe("Custom Test Model");
     expect(testModel.tags).toEqual(["custom", "override"]);
+  });
+});
+
+describe("validateStrategyReferences", () => {
+  it("returns no errors when all lens references are valid", () => {
+    const modelIds = new Set(["model-a", "model-b", "model-c"]);
+    const strategies = [
+      {
+        id: "test-strategy",
+        name: "Test",
+        description: "test",
+        tracks: {
+          track1: { lenses: ["model-a", "model-b"], focus: "test" },
+          track2: { lenses: ["model-c"], focus: "test" },
+        },
+      },
+    ];
+    const errors = validateStrategyReferences(strategies, modelIds);
+    expect(errors).toEqual([]);
+  });
+
+  it("returns errors for invalid lens references", () => {
+    const modelIds = new Set(["model-a"]);
+    const strategies = [
+      {
+        id: "test-strategy",
+        name: "Test",
+        description: "test",
+        tracks: {
+          track1: { lenses: ["model-a", "nonexistent"], focus: "test" },
+        },
+      },
+    ];
+    const errors = validateStrategyReferences(strategies, modelIds);
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toContain("test-strategy");
+    expect(errors[0]).toContain("track1");
+    expect(errors[0]).toContain("nonexistent");
+  });
+
+  it("reports all invalid references across multiple strategies and tracks", () => {
+    const modelIds = new Set(["model-a"]);
+    const strategies = [
+      {
+        id: "strategy-1",
+        name: "S1",
+        description: "test",
+        tracks: {
+          t1: { lenses: ["model-a", "bad-1"], focus: "test" },
+          t2: { lenses: ["bad-2"], focus: "test" },
+        },
+      },
+      {
+        id: "strategy-2",
+        name: "S2",
+        description: "test",
+        tracks: {
+          t1: { lenses: ["bad-3"], focus: "test" },
+        },
+      },
+    ];
+    const errors = validateStrategyReferences(strategies, modelIds);
+    expect(errors).toHaveLength(3);
   });
 });

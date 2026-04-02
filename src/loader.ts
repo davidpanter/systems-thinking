@@ -90,6 +90,30 @@ export async function loadStrategies(
   return [...filtered, ...customs];
 }
 
+/**
+ * Validate that all lens IDs referenced in strategy tracks exist in the
+ * loaded model set. Returns an array of human-readable error strings,
+ * or an empty array if all references are valid.
+ */
+export function validateStrategyReferences(
+  strategies: StrategyDefinition[],
+  modelIds: Set<string>
+): string[] {
+  const errors: string[] = [];
+  for (const strategy of strategies) {
+    for (const [trackName, track] of Object.entries(strategy.tracks)) {
+      for (const lensId of track.lenses) {
+        if (!modelIds.has(lensId)) {
+          errors.push(
+            `Strategy '${strategy.id}' track '${trackName}' references unknown model '${lensId}'`
+          );
+        }
+      }
+    }
+  }
+  return errors;
+}
+
 export async function loadModels(
   builtinDir: string,
   customDir?: string

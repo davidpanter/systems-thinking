@@ -6,7 +6,7 @@ import { fileURLToPath } from "url";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import chalk from "chalk";
-import { loadModels, loadStrategies } from "./loader.js";
+import { loadModels, loadStrategies, validateStrategyReferences } from "./loader.js";
 import { SystemsThinkingServer } from "./server.js";
 import { StartAnalysisInput, ApplyLensInput, SynthesizeInput, GetStrategyInput } from "./types.js";
 import type { StrategyDefinition } from "./types.js";
@@ -28,6 +28,16 @@ const models = await loadModels(builtinModelsDir, customModelsDir);
 const builtinStrategiesDir = path.join(__dirname, "..", "strategies");
 const strategies = await loadStrategies(builtinStrategiesDir, customModelsDir);
 const strategyMap = new Map<string, StrategyDefinition>(strategies.map((s) => [s.id, s]));
+
+// Validate strategy→model references at startup
+const modelIds = new Set(models.map((m) => m.id));
+const validationErrors = validateStrategyReferences(strategies, modelIds);
+if (validationErrors.length > 0) {
+  for (const err of validationErrors) {
+    console.error(chalk.red(`VALIDATION ERROR: ${err}`));
+  }
+  process.exit(1);
+}
 
 const disableLogging = process.env.DISABLE_THOUGHT_LOGGING === "true";
 
