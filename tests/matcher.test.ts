@@ -398,11 +398,12 @@ describe("computeClusters", () => {
     expect(clusterWithD!.modelIds).toContain("mod-f");
   });
 
-  it("assigns a theme to each cluster based on common tags", () => {
+  it("uses humanized category name as theme", () => {
     const clusters = computeClusters(clusterModels);
-    for (const cluster of clusters) {
-      expect(cluster.theme).toBeTruthy();
-    }
+    const clusterCat1 = clusters.find((c) => c.id === "cat1");
+    expect(clusterCat1!.theme).toBe("Cat1");
+    const clusterCat2 = clusters.find((c) => c.id === "cat2");
+    expect(clusterCat2!.theme).toBe("Cat2");
   });
 
   it("lists categories covered by each cluster", () => {

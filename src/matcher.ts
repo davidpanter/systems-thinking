@@ -69,20 +69,8 @@ export function computeClusters(models: ModelDefinition[]): ModelCluster[] {
     clusterIndex++;
     const members = memberIds.map((id) => modelMap.get(id)!);
 
-    // Theme: most common tags across cluster members
-    const tagCounts = new Map<string, number>();
-    for (const m of members) {
-      for (const tag of m.tags) {
-        tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
-      }
-    }
-    const topTags = [...tagCounts.entries()]
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 3)
-      .map(([tag]) => tag);
-    const theme = topTags.length > 0
-      ? topTags.map((t) => t.charAt(0).toUpperCase() + t.slice(1)).join(", ")
-      : categoryName;
+    // Theme: humanized category name
+    const theme = categoryName.charAt(0).toUpperCase() + categoryName.slice(1);
 
     const description = `${members.length} models: ${members.map((m) => m.name).join(", ")}`;
 
