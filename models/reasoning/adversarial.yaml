@@ -1,0 +1,58 @@
+id: adversarial
+name: Adversarial Analysis
+category: reasoning
+tags: [debate, critique, trade-offs, risk, devil-advocate, stress-test]
+description: >
+  Take the opposing side and argue against the proposal in good faith.
+  Surface pitfalls, flawed reasoning, hidden costs, unbalanced trade-offs,
+  and missing details that proponents are too close to see. The goal is not
+  to kill ideas but to strengthen them — what survives honest opposition
+  is worth building.
+
+guiding_questions:
+  - What is this proposal optimizing for, and what is it sacrificing?
+  - Where is the reasoning weakest? What leaps of logic are being made?
+  - What costs are being downplayed or ignored entirely?
+  - Who loses if this succeeds? What constituencies are unrepresented?
+  - What has to go right for this to work? How realistic is that?
+  - What simpler or cheaper alternative has been dismissed too quickly?
+  - Where does this argument rely on best-case assumptions?
+  - What prior attempts at something similar have failed, and why?
+
+required_fields:
+  strongest_objections:
+    description: The most compelling arguments against the proposal
+    hint: "Steel-man the opposition — what would a smart, informed critic say? Not strawmen, real problems."
+  flawed_reasoning:
+    description: Logical gaps, unsupported assumptions, or circular arguments in the proposal
+    hint: "Correlation treated as causation, survivorship bias, appeal to authority, false dichotomies"
+  hidden_costs:
+    description: Costs, burdens, or downsides the proposal minimizes or omits
+    hint: "Maintenance burden, opportunity cost, team cognitive load, migration pain, vendor lock-in"
+  unbalanced_tradeoffs:
+    description: Trade-offs where the cost side is underweighted relative to the benefit side
+    hint: "Gaining 10% performance for 3x complexity. Saving one team a day while costing another a week."
+  missing_details:
+    description: Questions the proposal doesn't answer that it should
+    hint: "Rollback plan? Scale limits? Who maintains this in 2 years? What happens when the author leaves?"
+  steelmanned_response:
+    description: How a proponent could address these objections — and whether those responses hold up
+    hint: "Anticipate the rebuttal. If the rebuttal is strong, say so. If it's hand-waving, call it out."
+
+related_models:
+  - id: inversion
+    reason: "Inversion and adversarial analysis both work backwards from failure, but adversarial targets specific proposals"
+  - id: second-order-thinking
+    reason: "Adversarial analysis often reveals second-order costs that proponents haven't considered"
+  - id: margin-of-safety
+    reason: "Adversarial analysis exposes where margins are too thin"
+  - id: build-vs-buy
+    reason: "Build-vs-buy decisions benefit heavily from adversarial scrutiny of both sides"
+  - id: dependency-risk
+    reason: "Adversarial review surfaces dependency risks that enthusiastic adoption overlooks"
+
+counterbalances:
+  - id: occams-razor
+    tension: "Adversarial analysis can generate endless objections — Occam's reminds us that not every concern is load-bearing"
+  - id: reversibility
+    tension: "If a decision is easily reversible, exhaustive adversarial analysis may be overkill — just try it"

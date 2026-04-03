@@ -36,6 +36,8 @@ related_models:
     reason: "Second-order effects often manifest as feedback loops"
   - id: inversion
     reason: "Invert second-order effects to find non-obvious failure paths"
+  - id: adversarial
+    reason: "Adversarial analysis surfaces second-order costs and consequences that proponents haven't considered"
 
 counterbalances:
   - id: occams-razor
