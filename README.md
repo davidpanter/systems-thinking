@@ -1,6 +1,6 @@
 # systems-thinking-mcp
 
-An MCP server that provides systems thinking models as composable analysis lenses for planning, architecture, and troubleshooting.
+An MCP server that provides systems thinking models as composable analysis lenses for architecture, infrastructure, DevOps, incident analysis, and technical decision-making.
 
 Inspired by [@modelcontextprotocol/server-sequential-thinking](https://github.com/modelcontextprotocol/servers/tree/main/src/sequentialthinking). Where sequential-thinking emphasizes **rigor** — structured step-by-step reasoning with revision and branching — this tool emphasizes **abstraction**. It provides a library of mental models (feedback loops, constraint analysis, inversion, etc.) that shift your perspective on a problem. The two are complementary: use sequential-thinking to reason carefully through a problem, use systems-thinking to ensure you're looking at it from the right angles.
 
@@ -56,15 +56,15 @@ npm install && npm run build
 | **synthesize** | Integrate findings across all applied lenses. Suggests additional lenses to fill gaps. |
 | **get_strategy** | Returns a concern map (domain, focus, weight) for a named strategy, guiding which categories to prioritize. |
 
-## Models (53)
+## Models (56)
 
 | Category | Models |
 |---|---|
 | Architecture | Modularity, Coupling & Cohesion, Conway's Law, Failure Modes, KISS, Separation of Concerns, Idempotency, Blast Radius, State Ownership, Error Propagation, Contract Boundaries, Data Transformation Fidelity |
-| Dynamics | Source & Sink, System Dynamics, Feedback & Feedforward Loops, Stock & Flow, Causal Loop Diagrams |
+| Dynamics | Source & Sink, System Dynamics, Feedback & Feedforward Loops, Stock & Flow, Causal Loop Diagrams, Local vs Global Optimization |
 | Operations | Queuing Theory, Buffers & Buffer Sizing, Constraint Analysis, Leverage Points, Migration |
 | Paradigms | Functional Lens, Domain Modeling Lens, Event-Driven Lens |
-| Reasoning | Inversion, Second-Order Thinking, Map vs Territory, Circle of Competence, Occam's Razor, Margin of Safety, Reversibility, Hanlon's Razor, Build vs. Buy, Dependency Risk |
+| Reasoning | Inversion, Second-Order Thinking, Map vs Territory, Circle of Competence, Occam's Razor, Margin of Safety, Reversibility, Hanlon's Razor, Build vs. Buy, Dependency Risk, Adversarial Analysis, Goodhart's Law |
 | Reliability | Observability Gaps, Error Budgets, Graceful Degradation, Back Pressure, Operational Complexity |
 | Schema | Normalization, Denormalization |
 | Security | CIA Triad, Least Privilege, Attack Surface, Defense in Depth, Trust Boundaries |
@@ -72,18 +72,20 @@ npm install && npm run build
 
 Models support multi-facet categories via a `categories` array in YAML, allowing a single model to appear in multiple categories.
 
-## Strategies (6)
+## Strategies (8)
 
-Strategies guide the LLM toward the right categories for a given task. Each strategy defines a concern map -- a list of domains (matching category names) with a focus question and weight (`required`, `conditional`, `optional`). Strategy-to-model validation runs at startup, ensuring concern domains match actual category names.
+Strategies guide the LLM toward the right categories for a given task. Each strategy defines a concern map — a list of domains (matching category names) with a focus question and weight (`required`, `conditional`, `optional`). Strategies work for any system — code, infrastructure, pipelines, platforms, or design documents. Strategy-to-model validation runs at startup, ensuring concern domains match actual category names.
 
 | Strategy | Description |
 |---|---|
-| **system-design** | Designing or evaluating system architecture |
+| **system-design** | Designing or evaluating system architecture, infrastructure, or design documents |
 | **code-review** | Reviewing code changes for structural and operational issues |
 | **incident-investigation** | Diagnosing production incidents |
+| **post-mortem** | Systemic analysis after incidents — feedback loops, structural weaknesses, incentive misalignments |
 | **security-audit** | Evaluating security posture |
 | **capacity-planning** | Planning for load, growth, and resource constraints |
 | **technical-decision** | Evaluating build/buy, migration, and technology choices |
+| **codebase-understanding** | Building a mental model of an unfamiliar system or area of code |
 
 ## Custom models
 
