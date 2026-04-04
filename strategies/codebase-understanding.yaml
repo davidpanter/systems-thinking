@@ -1,0 +1,23 @@
+id: codebase-understanding
+name: Codebase Understanding
+description: >
+  Build a mental model of an unfamiliar system or area of code. Not evaluating
+  or deciding — understanding. Map decomposition, paradigms, state flows,
+  and assumptions to orient before making changes.
+
+concerns:
+  - domain: architecture
+    focus: "How is the system decomposed? What are the key boundaries, interfaces, and dependencies?"
+    weight: required
+  - domain: paradigms
+    focus: "What paradigm is at work — functional, domain-driven, event-driven, or a mix? How does this shape the code?"
+    weight: required
+  - domain: dynamics
+    focus: "What state flows and feedback loops exist? Where does data accumulate and how does behavior change over time?"
+    weight: conditional
+  - domain: operations
+    focus: "Where are the bottlenecks and constraints? How does the system behave under load?"
+    weight: conditional
+  - domain: reasoning
+    focus: "What assumptions is the system built on? Where might the mental model diverge from reality?"
+    weight: conditional

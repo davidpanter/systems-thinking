@@ -20,13 +20,13 @@ guiding_questions:
 required_fields:
   reliability_requirements:
     description: Who needs what level of reliability, and why
-    hint: "Payment processing: 99.99% (financial loss per minute of downtime). Dashboard: 99.9% (annoying but not critical). Batch reports: 99% (can retry next day)."
+    hint: "Payment processing: 99.99% (financial loss per minute of downtime). Dashboard: 99.9% (annoying but not critical). Batch reports: 99% (can retry next day). CI pipeline green rate: 99% (flaky tests are a reliability tax). Infrastructure uptime: 99.95% (measured at the load balancer)."
   budget_allocation:
     description: Where the error budget is currently being spent
-    hint: "60% on deploy-related incidents, 25% on infrastructure (cloud provider), 15% on dependency failures. Deploys are the biggest consumer."
+    hint: "60% on deploy-related incidents, 25% on infrastructure (cloud provider), 15% on dependency failures. Deploys are the biggest consumer. Or: 40% flaky tests, 30% infra instability, 30% config drift."
   velocity_tradeoff:
     description: What the team could ship faster if reliability requirements were relaxed, or vice versa
-    hint: "If dashboard SLO relaxed to 99.5%, we could deploy 3x more often without risk. If payment SLO tightened to 99.999%, we'd need a deploy freeze process."
+    hint: "If dashboard SLO relaxed to 99.5%, we could deploy 3x more often without risk. If payment SLO tightened to 99.999%, we'd need a deploy freeze process. If pipeline reliability relaxed, we could skip redundant integration test suites. If deploy SLO tightened, we'd need canary deploys on every release."
   budget_signals:
     description: How the team knows when budget is running low
     hint: "Automated SLO burn rate alert at 50% consumed. Weekly SLO review in team standup. No signal currently — we find out after the fact."

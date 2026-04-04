@@ -19,7 +19,7 @@ guiding_questions:
 required_fields:
   blast_radius_map:
     description: For each component or change type, what's the blast radius
-    hint: "DB failure → everything down. Cache failure → degraded performance. Bad deploy → one service. Config change → all services."
+    hint: "DB failure → everything down. Cache failure → degraded performance. Bad deploy → one service. Config change → all services. A bad config push to the shared load balancer affects all services. A Terraform destroy in the wrong workspace wipes production. A DNS change propagates globally within TTL."
   containment_boundaries:
     description: What boundaries currently limit blast radius
     hint: "Service isolation, tenant sharding, regional deployments, feature flags, circuit breakers"

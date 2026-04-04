@@ -22,10 +22,10 @@ required_fields:
     hint: "Architecture diagrams, monitoring dashboards, mental models, documentation, type systems"
   known_divergences:
     description: Where the map is known to disagree with reality
-    hint: "Stale docs, monitoring blind spots, simplified mental models, outdated diagrams"
+    hint: "Stale docs, monitoring blind spots, simplified mental models, outdated diagrams. Infrastructure-as-code that doesn't match what's running. Kubernetes manifests that were hand-patched in production. Network diagrams from two migrations ago."
   untested_assumptions:
     description: Where we assume the map is accurate but haven't verified
-    hint: "We think the load balancer distributes evenly — have we checked?"
+    hint: "We think the load balancer distributes evenly — have we checked? We assume the load balancer distributes evenly. We assume DNS TTLs are respected by all clients. We assume the CI environment matches production."
   verification_actions:
     description: How to check the map against the territory
     hint: "Trace a real request, read the actual config, check the actual data, observe actual behavior"

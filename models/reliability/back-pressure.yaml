@@ -20,13 +20,13 @@ guiding_questions:
 required_fields:
   overload_behavior:
     description: What actually happens today under extreme load
-    hint: "At 5x load: response times degrade linearly. At 10x: OOM kill, full outage, 5-minute recovery. No graceful rejection."
+    hint: "At 5x load: response times degrade linearly. At 10x: OOM kill, full outage, 5-minute recovery. No graceful rejection. CI pipeline: builds queue indefinitely when runners are saturated. Deploy pipeline: requests stack up behind a slow canary analysis."
   unbounded_resources:
     description: Queues, buffers, connection pools that can grow without limit
     hint: "In-memory job queue has no max size. Thread pool grows unbounded. Retry queue accumulates during outage with no cap."
   pressure_signals:
     description: Where and how the system signals callers to slow down
-    hint: "API returns 429 with Retry-After header at 80% capacity. Queue publishes backlog metric but no consumer uses it. No back-pressure on internal service calls."
+    hint: "API returns 429 with Retry-After header at 80% capacity. Queue publishes backlog metric but no consumer uses it. No back-pressure on internal service calls. Pipeline queue depth alerts. Deployment slot limits. Rate-limited API calls to infrastructure providers."
   isolation_gaps:
     description: Where one caller's load can affect others
     hint: "All tenants share one connection pool — heavy tenant starves others. No per-client rate limiting on internal APIs. Batch jobs compete with real-time traffic."

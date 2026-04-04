@@ -18,7 +18,7 @@ guiding_questions:
 required_fields:
   modules_identified:
     description: List of major modules/units in the system
-    hint: "Name each module and state its single responsibility"
+    hint: "Name each module and state its single responsibility. In infrastructure: is networking separate from compute? Can you change the CI pipeline without touching deployment? Are monitoring and alerting independently configurable?"
   interface_quality:
     description: Assessment of interfaces between modules
     hint: "Are they minimal, well-defined, and stable?"

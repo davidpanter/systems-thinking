@@ -20,10 +20,10 @@ guiding_questions:
 required_fields:
   migration_strategy:
     description: Big-bang, strangler fig, parallel run, expand-contract — and why
-    hint: "Strangler fig — route new traffic to new service, old traffic stays until migrated. Chosen because rollback is just routing change."
+    hint: "Strangler fig — route new traffic to new service, old traffic stays until migrated. Chosen because rollback is just routing change. Infrastructure: blue-green deployment of new cluster, strangler fig for service-by-service migration, expand-contract for database schema changes."
   intermediate_states:
     description: What the system looks like mid-migration
-    hint: "During migration: both old and new tables exist, writes go to both, reads prefer new. Risk: data divergence if sync fails."
+    hint: "During migration: both old and new tables exist, writes go to both, reads prefer new. Risk: data divergence if sync fails. During cloud migration: some services on-prem, some in cloud, VPN bridging both. During Kubernetes migration: some workloads on VMs, some in pods, shared database."
   rollback_plan:
     description: How to reverse at each stage, and when reversal becomes impossible
     hint: "Before cutover: revert routing. After cutover but before decommission: restore from backup. After decommission: cannot rollback."

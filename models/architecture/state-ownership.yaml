@@ -19,10 +19,10 @@ guiding_questions:
 required_fields:
   state_map:
     description: Where state lives and who owns it
-    hint: "User session → Redis (owned by auth service). Order totals → DB (owned by checkout). Cart → client localStorage (owned by frontend)."
+    hint: "User session → Redis (owned by auth service). Order totals → DB (owned by checkout). Cart → client localStorage (owned by frontend). In GitOps: is the git repo or the running cluster the source of truth? Where does drift accumulate?"
   shared_state_risks:
     description: State accessed by multiple writers
-    hint: "Inventory count updated by checkout, returns, and warehouse sync — last-write-wins race condition."
+    hint: "Inventory count updated by checkout, returns, and warehouse sync — last-write-wins race condition. Shared Terraform state files. Multiple teams writing to the same Kubernetes namespace. Config maps modified by both automation and humans."
   consistency_model:
     description: How consistency is maintained — locks, events, eventual
     hint: "Strong consistency via DB transactions for payments. Eventual consistency via events for analytics."

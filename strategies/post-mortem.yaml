@@ -1,0 +1,20 @@
+id: post-mortem
+name: Post-Mortem
+description: >
+  Systemic analysis after an incident to prevent recurrence. Goes beyond
+  root cause to examine what feedback loops, structural weaknesses, and
+  incentive misalignments made the failure possible — and likely to recur.
+
+concerns:
+  - domain: dynamics
+    focus: "What systemic patterns contributed? What feedback loops amplified the failure? Where did local optimization create global problems?"
+    weight: required
+  - domain: architecture
+    focus: "What structural weaknesses enabled this? How did errors propagate? What was the actual blast radius?"
+    weight: conditional
+  - domain: reliability
+    focus: "Why wasn't this caught or contained? Where were the observability gaps? Did degradation paths work as designed?"
+    weight: required
+  - domain: reasoning
+    focus: "What was being measured or optimized for that missed this? Were metrics masking the real problem? What second-order effects were invisible?"
+    weight: required

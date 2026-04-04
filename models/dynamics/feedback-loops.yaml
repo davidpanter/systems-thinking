@@ -18,10 +18,10 @@ guiding_questions:
 required_fields:
   reinforcing_loops:
     description: Positive feedback loops that amplify change
-    hint: "Success breeds success, failure breeds failure, viral growth, technical debt accumulation"
+    hint: "Success breeds success, failure breeds failure, viral growth, technical debt accumulation. Alert fatigue: more alerts → more ignored alerts → more incidents → more alerts. Flaky tests: failures ignored → real bugs ship → trust erodes → more failures ignored."
   balancing_loops:
     description: Negative feedback loops that resist change and stabilize
-    hint: "Rate limiters, autoscaling, circuit breakers, backpressure"
+    hint: "Rate limiters, autoscaling, circuit breakers, backpressure. Error budgets: too many incidents → budget exhausted → deploy freeze → stability improves → budget replenishes."
   feedforward_controls:
     description: Anticipatory controls that act before feedback arrives
     hint: "Predictive scaling, pre-warming, capacity planning"

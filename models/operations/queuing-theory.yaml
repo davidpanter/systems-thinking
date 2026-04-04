@@ -21,7 +21,7 @@ required_fields:
     hint: "Request queues, job queues, message queues, connection queues, lock waits"
   arrival_vs_service:
     description: Arrival rate vs. service rate at each queue
-    hint: "If arrival > service even briefly, the queue grows"
+    hint: "If arrival > service even briefly, the queue grows. Commits per hour hitting the CI pipeline. Deploy requests queued behind a manual approval."
   utilization_analysis:
     description: Utilization levels and their effect on latency
     hint: "At 80% utilization, a single-server queue averages 4x the service time in wait"

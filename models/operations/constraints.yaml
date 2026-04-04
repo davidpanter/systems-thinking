@@ -20,10 +20,10 @@ required_fields:
     hint: "Include both obvious bottlenecks and hidden policy constraints"
   binding_constraint:
     description: The single constraint currently limiting the system
-    hint: "There is usually one that dominates — which is it?"
+    hint: "There is usually one that dominates — which is it? In a CI pipeline, often the longest test suite. In deployment, often the approval gate or the database migration step."
   exploitation:
     description: How to maximize throughput without changing the constraint
-    hint: "Before adding capacity, are we fully using what we have?"
+    hint: "Before adding capacity, are we fully using what we have? Parallelize test suites before adding more runners. Cache dependencies before upgrading build hardware."
   elevation:
     description: How to increase capacity of the constraint itself
     hint: "What would it take to remove this as the bottleneck?"

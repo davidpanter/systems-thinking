@@ -21,13 +21,13 @@ guiding_questions:
 required_fields:
   proxy_vs_goal:
     description: The metric being targeted and the real objective it represents
-    hint: "Code coverage (proxy) vs. bug detection (goal). Deploy frequency (proxy) vs. delivery speed (goal). SLO (proxy) vs. user satisfaction (goal)."
+    hint: "Code coverage (proxy) vs. bug detection (goal). Deploy frequency (proxy) vs. delivery speed (goal). SLO (proxy) vs. user satisfaction (goal). CI green rate (proxy) vs. catching real bugs (goal). MTTR (proxy) vs. incident resolution quality (goal). Deployment frequency (proxy) vs. value delivered (goal)."
   divergence_points:
     description: Where optimizing the proxy produces different outcomes than optimizing the goal
     hint: "Writing trivial tests to hit coverage targets. Splitting deploys to inflate frequency. Suppressing errors to protect SLO."
   gaming_vectors:
     description: How actors could or already do game the metric
-    hint: "Tests that assert true. Deploys that change nothing. Alert suppression. Counting activity instead of outcomes."
+    hint: "Tests that assert true. Deploys that change nothing. Alert suppression. Counting activity instead of outcomes. Skipping slow tests to keep pipeline fast. Auto-closing alerts to improve MTTR. Splitting one logical change into multiple deploys to hit frequency targets."
   measurement_validity:
     description: How well the current metrics actually track the real objective
     hint: "High coverage but bugs still ship (weak proxy). Low deploy failure rate but users still complain (missing dimension)."
@@ -37,8 +37,6 @@ related_models:
     reason: "Metric targets create second-order incentive shifts that distort behavior"
   - id: feedback-loops
     reason: "Metrics create reinforcing loops — hitting the target gets rewarded, reinforcing target-chasing"
-  - id: error-budgets
-    reason: "SLOs are a specific instance where Goodhart's applies — teams can game error budgets"
   - id: leverage-points
     reason: "Changing what you measure is a high-leverage intervention — Meadows' goal-level change"
 

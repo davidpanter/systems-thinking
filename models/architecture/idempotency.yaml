@@ -19,13 +19,13 @@ guiding_questions:
 required_fields:
   idempotent_operations:
     description: Operations that are safe to repeat
-    hint: "GET requests, upserts with unique keys, setting absolute values (SET x=5 vs INCREMENT x)"
+    hint: "GET requests, upserts with unique keys, setting absolute values (SET x=5 vs INCREMENT x). Terraform apply (declarative, converges to desired state). Ansible playbook with proper checks."
   non_idempotent_operations:
     description: Operations that produce different results on repeat execution
-    hint: "Increment counters, append to lists, send emails, charge credit cards, create records without dedup"
+    hint: "Increment counters, append to lists, send emails, charge credit cards, create records without dedup. Shell scripts that append to config files. Database migrations without idempotency guards. Helm hooks that create resources without checking existence."
   retry_exposure:
     description: Where retries, duplicates, or overlaps can trigger repeat execution
-    hint: "Queue redelivery, HTTP retries, cron overlap, user double-click, network timeout + retry"
+    hint: "Queue redelivery, HTTP retries, cron overlap, user double-click, network timeout + retry. CI pipeline retries on flaky infrastructure. Terraform re-runs after partial apply. Ansible playbook interrupted mid-run and restarted."
   idempotency_strategies:
     description: How to make non-idempotent operations safe
     hint: "Idempotency keys, upsert instead of insert, dedup tables, conditional writes, distributed locks"
