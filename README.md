@@ -2,7 +2,9 @@
 
 An MCP server that provides systems thinking models as composable analysis lenses for architecture, infrastructure, DevOps, incident analysis, and technical decision-making.
 
-Inspired by [@modelcontextprotocol/server-sequential-thinking](https://github.com/modelcontextprotocol/servers/tree/main/src/sequentialthinking). Where sequential-thinking emphasizes **rigor** — structured step-by-step reasoning with revision and branching — this tool emphasizes **abstraction**. It provides a library of mental models (feedback loops, constraint analysis, inversion, etc.) that shift your perspective on a problem. The two are complementary: use sequential-thinking to reason carefully through a problem, use systems-thinking to ensure you're looking at it from the right angles.
+Inspired by [@modelcontextprotocol/server-sequential-thinking](https://github.com/modelcontextprotocol/servers/tree/main/src/sequentialthinking). Where sequential-thinking emphasizes **rigor** — structured step-by-step reasoning with revision and branching — this tool emphasizes **abstraction**. It provides a library of mental models (feedback loops, constraint analysis, inversion, etc.) that shift Claude's perspective on a problem. The two are complementary: use sequential-thinking to reason carefully through a problem, use systems-thinking to ensure Claude's looking at it from the right angles.  This helps prevent tunnel vision, surface edge cases and unintended consequences, and reign in some of Claude's grandiousity by challenging the LLM to view the problem in the broader context in which it lives.
+
+I've had good luck using this in troubleshooting and debugging, design, code review, and spec review (pairs nicely with [superpower-mcp](https://github.com/jmcdice/superpower-mcp) just run it against the produced spec after the spec review cylce).  This is a highly general tool and can provide good results across different domains, development, infrastructure, devops.
 
 ## How it works
 
