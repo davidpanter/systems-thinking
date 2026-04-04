@@ -15,6 +15,7 @@ guiding_questions:
   - How do you verify the new state is correct before cutting over?
   - Is there a point of no return — when does rollback become impossible?
   - How long will old and new coexist, and what's the cost of dual-running?
+  - Are the constraints driving this migration strategy still real, or assumed from historical decisions that nobody has revisited?
 
 required_fields:
   migration_strategy:

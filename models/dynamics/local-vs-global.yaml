@@ -1,0 +1,48 @@
+id: local-vs-global
+name: Local vs Global Optimization
+category: dynamics
+tags: [optimization, misalignment, emergence, coordination, tradeoffs]
+description: >
+  Where are independent actors optimizing for local targets that conflict
+  with system-wide outcomes? Well-bounded components with clear ownership
+  can still produce global dysfunction when their optimization targets
+  diverge. The tragedy isn't bad intent — it's rational actors making
+  locally correct decisions that are globally harmful.
+
+guiding_questions:
+  - What is each component or team optimizing for?
+  - Where do those local targets conflict with system-wide goals?
+  - Are there cross-cutting concerns that no single owner is optimizing for?
+  - Where does one component's optimization degrade another's performance?
+  - If every component hit its targets perfectly, would the system as a whole be healthy?
+  - What system-level metrics exist that no individual component is accountable for?
+
+required_fields:
+  optimization_targets:
+    description: What each component or team is optimizing for
+    hint: "Team A: deploy velocity. Team B: latency. Team C: cost. Caching layer: hit rate. Database: query throughput."
+  conflicting_targets:
+    description: Where local optimization targets work against each other or against global health
+    hint: "Team A's deploy velocity creates operational burden for Team B. Cache hit rate optimization hurts data freshness. Per-service cost optimization increases total spend via duplication."
+  unowned_concerns:
+    description: System-level concerns that no single component or team is accountable for
+    hint: "End-to-end latency across services. Total infrastructure cost. Cross-service data consistency. User experience spanning multiple teams."
+  rebalancing_options:
+    description: How to realign local incentives with global outcomes
+    hint: "Shared SLOs across teams. System-level metrics that override component metrics. Cost allocation that reflects true consumption. Cross-team review of optimization decisions."
+
+related_models:
+  - id: constraints
+    reason: "The binding constraint is a specific case where local over-production creates global waste"
+  - id: conways-law
+    reason: "Org structure determines which optimization targets are local — team boundaries create optimization boundaries"
+  - id: feedback-loops
+    reason: "Local optimization without global feedback is an open loop — the optimizer can't see its downstream effects"
+  - id: separation-of-concerns
+    reason: "Clean separation enables local optimization but can hide cross-cutting costs"
+
+counterbalances:
+  - id: modularity
+    tension: "Local autonomy enables speed and ownership — global coordination adds overhead and blocks independent progress"
+  - id: kiss
+    tension: "Global optimization requires cross-cutting coordination mechanisms that add complexity — sometimes local-and-simple beats global-and-complex"

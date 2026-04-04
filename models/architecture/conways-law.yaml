@@ -34,3 +34,5 @@ related_models:
     reason: "Module boundaries should ideally align with team boundaries"
   - id: constraints
     reason: "Organizational constraints often bind tighter than technical ones"
+  - id: local-vs-global
+    reason: "Team boundaries create optimization boundaries — each team optimizes locally"

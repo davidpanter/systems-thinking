@@ -40,6 +40,8 @@ related_models:
     reason: "Well-separated concerns are simpler to understand individually"
   - id: contract-boundaries
     reason: "Well-defined contracts enforce separation between concerns"
+  - id: local-vs-global
+    reason: "Clean separation enables local optimization but can hide cross-cutting costs"
 
 counterbalances:
   - id: kiss

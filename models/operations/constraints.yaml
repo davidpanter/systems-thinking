@@ -42,6 +42,8 @@ related_models:
     reason: "The binding constraint often determines migration strategy"
   - id: error-budgets
     reason: "Reliability can be the binding constraint on development velocity"
+  - id: local-vs-global
+    reason: "Local over-production at non-constraints creates global waste — the core local-vs-global insight"
 
 counterbalances:
   - id: kiss

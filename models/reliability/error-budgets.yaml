@@ -38,6 +38,8 @@ related_models:
     reason: "What to sacrifice when error budget is spent"
   - id: constraints
     reason: "Reliability can be the binding constraint on velocity"
+  - id: goodharts-law
+    reason: "SLOs can be gamed — teams may optimize for the metric rather than actual reliability"
 
 counterbalances:
   - id: inversion

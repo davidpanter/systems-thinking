@@ -38,6 +38,8 @@ related_models:
     reason: "The causal map reveals where leverage points exist"
   - id: operational-complexity
     reason: "Automating highest-burden operations is often a high-leverage intervention"
+  - id: goodharts-law
+    reason: "Changing what you measure is a goal-level leverage point — one of the most powerful interventions"
 
 counterbalances:
   - id: kiss

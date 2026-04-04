@@ -38,6 +38,8 @@ related_models:
     reason: "Invert second-order effects to find non-obvious failure paths"
   - id: adversarial
     reason: "Adversarial analysis surfaces second-order costs and consequences that proponents haven't considered"
+  - id: goodharts-law
+    reason: "Metric targets are a common source of second-order incentive distortion"
 
 counterbalances:
   - id: occams-razor

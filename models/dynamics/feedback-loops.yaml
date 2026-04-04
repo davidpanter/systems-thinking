@@ -38,6 +38,10 @@ related_models:
     reason: "CLD is the standard notation for mapping feedback loops"
   - id: state-ownership
     reason: "State changes can create reinforcing or balancing feedback loops"
+  - id: goodharts-law
+    reason: "Metrics create reinforcing loops around target-chasing rather than goal-achieving"
+  - id: local-vs-global
+    reason: "Local optimization without global feedback is an open loop — the optimizer can't see downstream effects"
 
 counterbalances:
   - id: occams-razor

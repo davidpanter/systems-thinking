@@ -38,6 +38,8 @@ related_models:
     reason: "Can you trace error paths through your observability?"
   - id: operational-complexity
     reason: "More observability can add operational burden"
+  - id: goodharts-law
+    reason: "Metrics meant to observe behavior can distort it when they become targets"
 
 counterbalances:
   - id: operational-complexity
