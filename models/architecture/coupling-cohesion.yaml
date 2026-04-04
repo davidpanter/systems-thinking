@@ -33,3 +33,7 @@ related_models:
     reason: "Modularity provides the structural context for coupling analysis"
   - id: leverage-points
     reason: "Decoupling a key dependency can be a high-leverage intervention"
+  - id: state-ownership
+    reason: "Shared state is a form of hidden coupling between components"
+  - id: contract-boundaries
+    reason: "Implicit contracts are a source of hidden coupling"

@@ -36,7 +36,9 @@ related_models:
     reason: "The queue that grows fastest is likely at the constraint"
   - id: stock-and-flow
     reason: "Queues are stocks; arrival/service rates are flows"
+  - id: back-pressure
+    reason: "Back-pressure is what happens when queuing assumptions break"
 
 counterbalances:
-  - id: kiss
-    tension: "Queuing math can over-engineer what might just need a bigger box or fewer features"
+  - id: margin-of-safety
+    tension: "Instead of optimizing queue behavior, just over-provision — more capacity and larger buffers can be simpler than tuning arrival and service rates"

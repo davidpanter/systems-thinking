@@ -39,5 +39,5 @@ related_models:
     reason: "Each dependency expands the attack surface"
 
 counterbalances:
-  - id: kiss
-    tension: "Vendoring everything or writing everything in-house to avoid dependency risk can be worse than the risk itself"
+  - id: build-vs-buy
+    tension: "The cost of owning everything in-house to avoid dependency risk can exceed the risk itself — sometimes depending on others is the right economic choice"

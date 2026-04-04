@@ -38,6 +38,10 @@ related_models:
     reason: "Buffer sizing protects the constraint from starvation"
   - id: leverage-points
     reason: "The binding constraint is often a high-leverage intervention point"
+  - id: migration
+    reason: "The binding constraint often determines migration strategy"
+  - id: error-budgets
+    reason: "Reliability can be the binding constraint on development velocity"
 
 counterbalances:
   - id: kiss

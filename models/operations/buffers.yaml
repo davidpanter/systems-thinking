@@ -36,3 +36,5 @@ related_models:
     reason: "Place the largest buffers in front of the constraint"
   - id: failure-modes
     reason: "Buffer overflow and starvation are common failure modes"
+  - id: back-pressure
+    reason: "Buffers without back-pressure become unbounded queues"

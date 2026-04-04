@@ -37,6 +37,10 @@ related_models:
     reason: "Irreversible decisions need larger margins of safety"
   - id: second-order-thinking
     reason: "Second-order effects of irreversible decisions are the most dangerous"
+  - id: build-vs-buy
+    reason: "Reversibility differs significantly between build and buy paths"
+  - id: migration
+    reason: "Rollback is reversibility applied to migration"
 
 counterbalances:
   - id: constraints

@@ -37,6 +37,14 @@ related_models:
     reason: "Module boundaries are blast radius containment boundaries"
   - id: defense-in-depth
     reason: "Defense layers limit how far a failure propagates"
+  - id: error-propagation
+    reason: "Error propagation paths determine what falls within the blast radius"
+  - id: dependency-risk
+    reason: "Dependency failure has a blast radius across all consumers"
+  - id: migration
+    reason: "Migration failure blast radius can span data and services"
+  - id: graceful-degradation
+    reason: "Graceful degradation limits the effective blast radius"
 
 counterbalances:
   - id: kiss

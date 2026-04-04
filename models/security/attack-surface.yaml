@@ -37,6 +37,8 @@ related_models:
     reason: "Reducing privilege reduces the value of each attack surface entry point"
   - id: trust-boundaries
     reason: "Attack surface lives at trust boundaries"
+  - id: dependency-risk
+    reason: "Each dependency expands the attack surface"
 
 counterbalances:
   - id: kiss

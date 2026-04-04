@@ -37,6 +37,8 @@ related_models:
     reason: "Unnecessary coupling is a common source of accidental complexity"
   - id: leverage-points
     reason: "Simplification is often a high-leverage intervention"
+  - id: operational-complexity
+    reason: "Operational complexity is a form of accidental complexity that KISS targets"
 
 counterbalances:
   - id: modularity

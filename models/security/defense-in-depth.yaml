@@ -39,5 +39,5 @@ related_models:
     reason: "Layer depth should match the CIA priority of each asset"
 
 counterbalances:
-  - id: kiss
-    tension: "Each defense layer adds complexity and operational overhead — diminishing returns set in"
+  - id: operational-complexity
+    tension: "Each security layer is another thing to configure, monitor, rotate, and patch — defense in depth can become operational hell"

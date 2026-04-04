@@ -37,3 +37,5 @@ related_models:
     reason: "Privilege should change at trust boundary transitions"
   - id: modularity
     reason: "Module boundaries should align with trust boundaries where security matters"
+  - id: contract-boundaries
+    reason: "Contracts define what to trust across boundary crossings"

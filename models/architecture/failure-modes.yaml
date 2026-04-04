@@ -36,3 +36,9 @@ related_models:
     reason: "Buffers absorb transient failures and prevent cascades"
   - id: feedback-loops
     reason: "Failure cascades are runaway positive feedback loops"
+  - id: error-propagation
+    reason: "Traces where failures propagate after they occur"
+  - id: observability-gaps
+    reason: "You need to observe the failure modes you've identified"
+  - id: graceful-degradation
+    reason: "Degradation strategies are the response to identified failure modes"

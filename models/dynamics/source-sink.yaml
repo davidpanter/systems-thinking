@@ -34,3 +34,5 @@ related_models:
     reason: "Stock & flow formalizes the accumulation between sources and sinks"
   - id: buffers
     reason: "Buffers sit between sources and sinks — sizing matters"
+  - id: data-transformation-fidelity
+    reason: "Data transforms between source and sink — fidelity matters at each step"

@@ -39,5 +39,5 @@ related_models:
     reason: "Degradation is how you spend error budget deliberately"
 
 counterbalances:
-  - id: kiss
-    tension: "Degradation paths are code paths that rarely run and are hard to test — is partial functionality worth the complexity vs. fast recovery?"
+  - id: back-pressure
+    tension: "Rather than degrading under load, reject excess work entirely — simpler to reason about and test than partial functionality"

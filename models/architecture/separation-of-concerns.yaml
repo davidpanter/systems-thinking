@@ -38,6 +38,8 @@ related_models:
     reason: "Mixed concerns produce low cohesion and high coupling"
   - id: kiss
     reason: "Well-separated concerns are simpler to understand individually"
+  - id: contract-boundaries
+    reason: "Well-defined contracts enforce separation between concerns"
 
 counterbalances:
   - id: kiss

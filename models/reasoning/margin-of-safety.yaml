@@ -37,6 +37,10 @@ related_models:
     reason: "Inversion reveals what the margin needs to protect against"
   - id: circle-of-competence
     reason: "Build larger margins in areas outside your circle of competence"
+  - id: build-vs-buy
+    reason: "Both build and buy paths need margin budgeted for uncertainty"
+  - id: error-budgets
+    reason: "Error budgets are a formalized margin of safety for reliability"
 
 counterbalances:
   - id: constraints

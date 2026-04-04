@@ -40,5 +40,5 @@ related_models:
     reason: "More observability can add operational burden"
 
 counterbalances:
-  - id: kiss
-    tension: "Instrumenting everything creates noise and maintenance burden — what's actually worth watching?"
+  - id: operational-complexity
+    tension: "Every metric, log, and trace is something to maintain, alert on, and triage — observability itself has operational cost"

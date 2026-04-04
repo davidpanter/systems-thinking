@@ -36,6 +36,8 @@ related_models:
     reason: "Changing feedback loop structure is high-leverage"
   - id: causal-loop-diagrams
     reason: "The causal map reveals where leverage points exist"
+  - id: operational-complexity
+    reason: "Automating highest-burden operations is often a high-leverage intervention"
 
 counterbalances:
   - id: kiss
