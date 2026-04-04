@@ -21,6 +21,9 @@ concerns:
   - domain: paradigms
     focus: "What does each paradigm lens reveal? Is state ownership clear? Are data flows composable?"
     weight: conditional
+  - domain: security
+    focus: "What trust boundaries exist? What's the attack surface? Are access patterns appropriate?"
+    weight: conditional
   - domain: reasoning
     focus: "What could go wrong? What second-order effects will surprise us?"
     weight: required

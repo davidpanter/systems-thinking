@@ -372,3 +372,9 @@ A multi-track playbook for evaluating build/buy, migration, and technology choic
 
 **Strategies modified:** system-design (+2 tracks), code-review (+1 track), incident-investigation (+1 track)
 **Strategies added:** technical-decision (3 tracks)
+
+## TODO
+
+- [ ] **Strategy tracks need schema changes.** The "Strategy Updates" section describes ordered lens sequences within concerns (e.g., "data-flow: [state-ownership, data-transformation-fidelity, ...]") but the current `StrategyDefinition` type only supports `{domain, focus, weight}`. Either define the schema changes needed or rewrite the strategy updates to use the existing concern format.
+- [ ] **Add back-references to existing models.** New models declare `related_models` edges to existing models, but existing models don't reference back. This makes the graph asymmetric — `expand_selection` from e.g. `failure-modes` won't surface `error-propagation` as a neighbor. Update existing YAML files where the relationship is genuinely bidirectional.
+- [ ] **Review KISS counterbalance concentration.** 6/15 new models use KISS as counterbalance. The tensions are individually specific, but some models may benefit from more targeted counterbalances (e.g., `graceful-degradation` ↔ `back-pressure` instead of KISS).

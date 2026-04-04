@@ -65,10 +65,22 @@ if (!disableLogging) {
 
 const thinkingServer = new SystemsThinkingServer(models);
 
-const mcpServer = new McpServer({
-  name: "systems-thinking-mcp",
-  version: "0.1.0",
-});
+const mcpServer = new McpServer(
+  {
+    name: "systems-thinking-mcp",
+    version: "0.1.0",
+  },
+  {
+    instructions: `Structured systems thinking analysis through composable mental model lenses. Use this server when analyzing, designing, or reviewing:
+- System architecture or design documents (specs, ADRs, proposals)
+- Code review with architectural concerns
+- Incident investigation or root cause analysis
+- Technical decisions (build vs buy, migration strategy)
+- Capacity planning or operational readiness
+
+Start with get_strategy to see if a predefined strategy fits, or start_analysis to explore available models. Apply 2-4 lenses, then synthesize findings. The value is in composing multiple perspectives — no single lens is the point.`,
+  },
+);
 
 // --- Tool: start_analysis ---
 
@@ -241,6 +253,8 @@ mcpServer.registerTool("get_strategy", {
 Available strategies: ${strategies.map((s) => `${s.id} (${s.name})`).join(", ")}
 
 Call without strategyId to list all strategies. Call with a strategyId to get the concern map.
+
+Strategies work for both existing systems AND design documents (specs, ADRs, proposals). For example, system-design is appropriate for reviewing a design spec — the concerns apply equally to proposed and implemented architectures.
 
 USAGE: Get a strategy, then for each concern: evaluate relevance to your specific problem, use expand_selection with models from that concern's domain, pick appropriate lenses, and apply them. Concerns marked "required" should always be evaluated. "Conditional" concerns depend on the scale and nature of the change. Each concern can be run in parallel as an independent analysis track.`,
   inputSchema: GetStrategyInput,
